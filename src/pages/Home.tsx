@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { MessageCircle, BookOpen, Heart, TrendingUp, Sparkles, Wind, Brain, Smile, Calendar } from 'lucide-react'
+import { MessageCircle, BookOpen, Heart, TrendingUp, Sparkles, Wind, Brain, Calendar } from 'lucide-react'
 import { getMoods, getTodayMood } from '../lib/db'
 
-const moodIcons = [Heart, Heart, Heart, Heart, Heart] // will use color + label for differentiation
 const moodLabels = ['Struggling', 'Low', 'Okay', 'Good', 'Great']
-const moodColors = ['#c44', '#e88', '#aa9', '#7a9', '#5a7']
 
 export default function Home() {
   const [todayMood, setTodayMood] = useState<number | null>(null)

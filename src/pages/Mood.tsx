@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { TrendingUp, Frown, Meh, Smile, Laugh, Heart } from 'lucide-react'
+import { TrendingUp, Frown, Meh, Smile, Laugh } from 'lucide-react'
 import { getMoods, saveMood, getTodayMood } from '../lib/db'
 
 const moodIcons = [Frown, Frown, Meh, Smile, Laugh]

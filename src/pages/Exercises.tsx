@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Wind, Brain, Eye, Hand, Ear, Coffee, Check, Heart, X } from 'lucide-react'
+import { Wind, Brain, Eye, Hand, Ear, Coffee, Check, X } from 'lucide-react'
 
 export default function Exercises() {
   const [active, setActive] = useState<string | null>(null)
