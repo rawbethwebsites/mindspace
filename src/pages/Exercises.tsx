@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Wind, Brain, Eye, Hand, Ear, Coffee } from 'lucide-react'
 
 export default function Exercises() {

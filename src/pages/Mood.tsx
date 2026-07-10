@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Heart, TrendingUp } from 'lucide-react'
+import { TrendingUp } from 'lucide-react'
 import { getMoods, saveMood, getTodayMood } from '../lib/db'
 
 const moodEmojis = ['😢', '😕', '😐', '🙂', '😊']

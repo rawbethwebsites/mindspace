@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { BookOpen, Sparkles, Trash2, Loader2, Plus } from 'lucide-react'
-import { getJournalEntries, saveJournalEntry, deleteJournalEntry, type JournalEntry } from '../lib/db'
+import { getJournalEntries, saveJournalEntry, deleteJournalEntry } from '../lib/db'
 import { getJournalReflection } from '../lib/ai'
 import { useEffect } from 'react'
 

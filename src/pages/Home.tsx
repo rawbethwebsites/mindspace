@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { MessageCircle, BookOpen, Heart, Wind, TrendingUp, Sparkles } from 'lucide-react'
+import { MessageCircle, BookOpen, Heart, TrendingUp, Sparkles } from 'lucide-react'
 import { getMoods, getTodayMood } from '../lib/db'
 
 const moodEmojis = ['😢', '😕', '😐', '🙂', '😊']
-const moodLabels = ['Struggling', 'Low', 'Okay', 'Good', 'Great']
 
 export default function Home() {
   const [todayMood, setTodayMood] = useState<number | null>(null)

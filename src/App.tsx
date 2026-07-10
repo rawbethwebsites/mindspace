@@ -1,4 +1,4 @@
-import { Outlet, NavLink, useLocation } from 'react-router-dom'
+import { Outlet, NavLink } from 'react-router-dom'
 import { Home, MessageCircle, BookOpen, Heart, Wind, Phone, AlertTriangle } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import Disclaimer from './components/Disclaimer'
@@ -16,7 +16,6 @@ const navItems = [
 export default function App() {
   const [showCrisis, setShowCrisis] = useState(false)
   const [acknowledged, setAcknowledged] = useState(false)
-  const location = useLocation()
 
   useEffect(() => {
     const ack = localStorage.getItem('mindspace-ack')
