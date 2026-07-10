@@ -11,33 +11,33 @@ export default function CrisisAlert({ onClose }: { onClose: () => void }) {
               <AlertTriangle size={20} className="text-red-600" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-[#2C2C2C]">You matter. Help is here.</h2>
-              <p className="text-sm text-[#6B6B6B]">If you're in crisis, please reach out now.</p>
+              <h2 className="text-lg font-bold text-[var(--color-on-surface)]">You matter. Help is here.</h2>
+              <p className="text-sm text-[var(--color-on-surface-muted)]">If you're in crisis, please reach out now.</p>
             </div>
           </div>
-          <button onClick={onClose} className="text-[#6B6B6B] hover:text-[#2C2C2C] p-1">
+          <button onClick={onClose} className="text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] p-1">
             <X size={20} />
           </button>
         </div>
 
         <div className="space-y-3">
           {crisisResources.map((r) => (
-            <div key={r.name} className="border border-gray-100 rounded-xl p-4 hover:border-[#8BA889]/30 transition-colors">
-              <h3 className="font-semibold text-[#2C2C2C] mb-1">{r.name}</h3>
-              <p className="text-sm text-[#6B6B6B] mb-2">{r.description}</p>
+            <div key={r.name} className="border border-gray-100 rounded-xl p-4 hover:border-[var(--color-primary)]/30 transition-colors">
+              <h3 className="font-semibold text-[var(--color-on-surface)] mb-1">{r.name}</h3>
+              <p className="text-sm text-[var(--color-on-surface-muted)] mb-2">{r.description}</p>
               <div className="flex flex-wrap gap-3 text-sm">
                 {r.phone && (
-                  <a href={`tel:${r.phone}`} className="flex items-center gap-1.5 text-[#5F7A5E] font-medium hover:underline">
+                  <a href={`tel:${r.phone}`} className="flex items-center gap-1.5 text-[var(--color-primary-dark)] font-medium hover:underline">
                     <Phone size={14} /> {r.phone}
                   </a>
                 )}
                 {r.text && (
-                  <span className="flex items-center gap-1.5 text-[#5F7A5E] font-medium">
+                  <span className="flex items-center gap-1.5 text-[var(--color-primary-dark)] font-medium">
                     <MessageSquare size={14} /> {r.text}
                   </span>
                 )}
                 {r.url && (
-                  <a href={r.url} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-[#6B9BB5] font-medium hover:underline">
+                  <a href={r.url} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-[var(--color-secondary)] font-medium hover:underline">
                     <Globe size={14} /> Website
                   </a>
                 )}
@@ -46,15 +46,15 @@ export default function CrisisAlert({ onClose }: { onClose: () => void }) {
           ))}
         </div>
 
-        <div className="mt-4 p-4 bg-[#8BA889]/8 rounded-xl">
-          <p className="text-sm text-[#5F7A5E]">
+        <div className="mt-4 p-4 bg-[var(--color-primary)]/8 rounded-xl">
+          <p className="text-sm text-[var(--color-primary-dark)]">
             If you're in immediate danger, call your local emergency number (911 in the US, 999 in the UK, 112 in Europe).
           </p>
         </div>
 
         <button
           onClick={onClose}
-          className="mt-4 w-full py-3 rounded-xl bg-[#8BA889] text-white font-medium hover:bg-[#5F7A5E] transition-colors"
+          className="mt-4 w-full py-3 rounded-xl bg-[var(--color-primary)] text-white font-medium hover:bg-[var(--color-primary-dark)] transition-colors"
         >
           I understand
         </button>

@@ -38,7 +38,6 @@ export default function Chat() {
   const handleSend = async () => {
     if (!input.trim() || streaming) return
 
-    // Crisis check
     if (detectCrisis(input)) {
       window.dispatchEvent(new CustomEvent('show-crisis'))
     }
@@ -66,7 +65,7 @@ export default function Chat() {
     try {
       let fullContent = ''
       const aiMessages = newMessages.map(m => ({ role: m.role, content: m.content }))
-      
+
       for await (const chunk of streamChat(aiMessages, abortRef.current.signal)) {
         fullContent += chunk
         setStreamContent(fullContent)
@@ -74,7 +73,7 @@ export default function Chat() {
 
       const aiMsg: ChatMessage = {
         role: 'assistant',
-        content: fullContent || 'I hear you. Can you tell me more about what you\'re feeling?',
+        content: fullContent || "I hear you. Can you tell me more about what you're feeling?",
         timestamp: Date.now(),
       }
 
@@ -82,7 +81,6 @@ export default function Chat() {
       setMessages(finalMessages)
       setStreamContent('')
 
-      // Save
       const title = newMessages[0].content.slice(0, 50) + (newMessages[0].content.length > 50 ? '...' : '')
       await saveConversation(convId, title, finalMessages)
       loadConversations()
@@ -90,7 +88,7 @@ export default function Chat() {
       if (err instanceof Error && err.name !== 'AbortError') {
         const errMsg: ChatMessage = {
           role: 'assistant',
-          content: 'I\'m having trouble connecting right now. Please try again in a moment.',
+          content: "I'm having trouble connecting right now. Please try again in a moment.",
           timestamp: Date.now(),
         }
         setMessages([...newMessages, errMsg])
@@ -123,25 +121,26 @@ export default function Chat() {
   return (
     <div className="flex h-screen pb-7">
       {/* Conversation list */}
-      <div className={`w-64 border-r border-[#E8E0D0] bg-[#F5F1EA] flex-col ${showConvList ? 'flex' : 'hidden'} md:flex`}>
+      <div className={`w-64 border-r border-[var(--color-border)] bg-[var(--color-background)] flex-col ${showConvList ? 'flex' : 'hidden'} md:flex`}>
         <button
           onClick={newConversation}
-          className="m-3 flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[#8BA889] text-white text-sm font-medium hover:bg-[#5F7A5E] transition-colors"
+          aria-label="Start new conversation"
+          className="m-3 flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary-dark)] transition-colors min-h-[44px]"
         >
-          <Plus size={16} /> New conversation
+          <Plus size={16} aria-hidden="true" /> New conversation
         </button>
         <div className="flex-1 overflow-y-auto px-3 space-y-1">
           {conversations.length === 0 && (
-            <p className="text-xs text-[#6B6B6B] px-3 py-4 text-center">No conversations yet</p>
+            <p className="text-xs text-[var(--color-on-surface-muted)] px-3 py-4 text-center">No conversations yet</p>
           )}
           {conversations.map(conv => (
-            <div key={conv.id} className={`group flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${activeId === conv.id ? 'bg-[#8BA889]/15' : 'hover:bg-[#8BA889]/8'}`}>
-              <button onClick={() => loadConv(conv.id)} className="flex-1 flex items-center gap-2 text-left text-sm text-[#2C2C2C] truncate">
-                <MessageCircle size={14} className="shrink-0 text-[#8BA889]" />
+            <div key={conv.id} className={`group flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors min-h-[44px] ${activeId === conv.id ? 'bg-[var(--color-primary)]/15' : 'hover:bg-[var(--color-primary)]/8'}`}>
+              <button onClick={() => loadConv(conv.id)} className="flex-1 flex items-center gap-2 text-left text-sm text-[var(--color-on-surface)] truncate" aria-label={`Open conversation: ${conv.title}`}>
+                <MessageCircle size={14} className="shrink-0 text-[var(--color-primary)]" aria-hidden="true" />
                 <span className="truncate">{conv.title}</span>
               </button>
-              <button onClick={() => handleDelete(conv.id)} className="opacity-0 group-hover:opacity-100 text-[#6B6B6B] hover:text-red-500 transition-all">
-                <Trash2 size={14} />
+              <button onClick={() => handleDelete(conv.id)} aria-label="Delete conversation" className="opacity-0 group-hover:opacity-100 text-[var(--color-on-surface-muted)] hover:text-[var(--color-error)] transition-all p-1 min-w-[44px] min-h-[44px] flex items-center justify-center">
+                <Trash2 size={14} aria-hidden="true" />
               </button>
             </div>
           ))}
@@ -151,16 +150,16 @@ export default function Chat() {
       {/* Chat area */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <div className="border-b border-[#E8E0D0] px-4 py-3 flex items-center gap-3">
-          <button onClick={() => setShowConvList(!showConvList)} className="md:hidden text-[#6B6B6B]">
-            <MessageCircle size={20} />
+        <div className="border-b border-[var(--color-border)] px-4 py-3 flex items-center gap-3">
+          <button onClick={() => setShowConvList(!showConvList)} aria-label="Toggle conversation list" className="md:hidden text-[var(--color-on-surface-muted)] min-w-[44px] min-h-[44px] flex items-center justify-center">
+            <MessageCircle size={20} aria-hidden="true" />
           </button>
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#8BA889] to-[#6B9BB5] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center" aria-hidden="true">
             <MessageCircle size={16} className="text-white" />
           </div>
           <div>
-            <h2 className="font-semibold text-[#2C2C2C] text-sm">Mindspace AI</h2>
-            <p className="text-xs text-[#6B6B6B]">Supportive • Non-judgmental</p>
+            <h2 className="font-semibold text-[var(--color-on-surface)] text-sm">Mindspace AI</h2>
+            <p className="text-xs text-[var(--color-on-surface-muted)]">Supportive · Non-judgmental</p>
           </div>
         </div>
 
@@ -168,14 +167,19 @@ export default function Chat() {
         <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4 max-w-3xl mx-auto w-full">
           {messages.length === 0 && !streaming && (
             <div className="text-center py-16">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#8BA889] to-[#6B9BB5] flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center mx-auto mb-4" aria-hidden="true">
                 <MessageCircle size={28} className="text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-[#2C2C2C] mb-2">How are you feeling today?</h3>
-              <p className="text-sm text-[#6B6B6B] max-w-sm mx-auto mb-6">This is a safe space. Share whatever is on your mind — no judgment, just support.</p>
+              <h3 className="text-lg font-semibold text-[var(--color-on-surface)] mb-2">How are you feeling today?</h3>
+              <p className="text-sm text-[var(--color-on-surface-muted)] max-w-sm mx-auto mb-6">This is a safe space. Share whatever is on your mind — no judgment, just support.</p>
               <div className="flex flex-wrap gap-2 justify-center">
-                {['I\'ve been feeling anxious', 'I\'m stressed about work', 'I feel lonely', 'I need someone to talk to'].map(s => (
-                  <button key={s} onClick={() => setInput(s)} className="px-3 py-1.5 rounded-full bg-white border border-[#E8E0D0] text-xs text-[#6B6B6B] hover:border-[#8BA889] hover:text-[#5F7A5E] transition-colors">
+                {["I've been feeling anxious", "I'm stressed about work", 'I feel lonely', 'I need someone to talk to'].map(s => (
+                  <button
+                    key={s}
+                    onClick={() => setInput(s)}
+                    aria-label={`Start with: ${s}`}
+                    className="px-3 py-2 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] text-xs text-[var(--color-on-surface-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary-dark)] transition-colors min-h-[44px]"
+                  >
                     {s}
                   </button>
                 ))}
@@ -187,24 +191,24 @@ export default function Chat() {
             <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} fade-in`}>
               <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                 msg.role === 'user'
-                  ? 'bg-[#8BA889] text-white rounded-br-md'
-                  : 'bg-white text-[#2C2C2C] rounded-bl-md border border-[#E8E0D0]'
+                  ? 'bg-[var(--color-primary)] text-white rounded-br-md'
+                  : 'bg-[var(--color-surface)] text-[var(--color-on-surface)] rounded-bl-md border border-[var(--color-border)]'
               }`}>
                 {msg.content}
               </div>
             </div>
           ))}
 
-          {/* Streaming message */}
+          {/* Streaming message with loading state */}
           {streaming && (
             <div className="flex justify-start fade-in">
-              <div className="max-w-[80%] px-4 py-2.5 rounded-2xl rounded-bl-md bg-white border border-[#E8E0D0] text-sm leading-relaxed text-[#2C2C2C]">
+              <div className="max-w-[80%] px-4 py-2.5 rounded-2xl rounded-bl-md bg-[var(--color-surface)] border border-[var(--color-border)] text-sm leading-relaxed text-[var(--color-on-surface)]">
                 {streamContent || (
-                  <span className="flex items-center gap-2 text-[#6B6B6B]">
-                    <Loader2 size={14} className="animate-spin" /> Thinking...
+                  <span className="flex items-center gap-2 text-[var(--color-on-surface-muted)]" role="status" aria-live="polite">
+                    <Loader2 size={14} className="animate-spin" aria-hidden="true" /> Thinking...
                   </span>
                 )}
-                <span className="inline-block w-1.5 h-3.5 bg-[#8BA889] ml-0.5 animate-pulse" />
+                {streamContent && <span className="inline-block w-1.5 h-3.5 bg-[var(--color-primary)] ml-0.5 animate-pulse" aria-hidden="true" />}
               </div>
             </div>
           )}
@@ -213,7 +217,7 @@ export default function Chat() {
         </div>
 
         {/* Input */}
-        <div className="border-t border-[#E8E0D0] p-4 max-w-3xl mx-auto w-full">
+        <div className="border-t border-[var(--color-border)] p-4 max-w-3xl mx-auto w-full">
           <div className="flex items-end gap-2">
             <textarea
               value={input}
@@ -226,15 +230,17 @@ export default function Chat() {
               }}
               placeholder="Share what's on your mind..."
               rows={1}
-              className="flex-1 resize-none px-4 py-3 rounded-xl bg-white border border-[#E8E0D0] text-sm text-[#2C2C2C] placeholder:text-[#6B6B6B]/50 focus:outline-none focus:border-[#8BA889] transition-colors max-h-32"
+              aria-label="Type your message"
+              className="flex-1 resize-none px-4 py-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-sm text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-subtle)] focus:outline-none focus:border-[var(--color-primary)] transition-colors max-h-32"
               disabled={streaming}
             />
             <button
               onClick={handleSend}
               disabled={!input.trim() || streaming}
-              className="w-11 h-11 rounded-xl bg-[#8BA889] text-white flex items-center justify-center hover:bg-[#5F7A5E] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+              aria-label="Send message"
+              className="w-12 h-12 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center hover:bg-[var(--color-primary-dark)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
             >
-              <Send size={16} />
+              <Send size={16} aria-hidden="true" />
             </button>
           </div>
         </div>

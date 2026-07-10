@@ -1,16 +1,25 @@
 @import "tailwindcss";
 
 @theme {
-  --color-sage: #8BA889;
-  --color-sage-light: #B4C9B0;
-  --color-sage-dark: #5F7A5E;
-  --color-cream: #F5F1EA;
-  --color-cream-dark: #E8E0D0;
-  --color-softblue: #A8C5D6;
-  --color-softblue-dark: #6B9BB5;
-  --color-warm: #E8D5C4;
-  --color-ink: #2C2C2C;
-  --color-muted: #6B6B6B;
+  /* Semantic color tokens — never use raw hex in components */
+  --color-primary: #8BA889;
+  --color-primary-dark: #5F7A5E;
+  --color-primary-light: #B4C9B0;
+  --color-secondary: #6B9BB5;
+  --color-secondary-dark: #4A7A94;
+  --color-surface: #FFFFFF;
+  --color-surface-elevated: #FDFDFD;
+  --color-background: #F5F1EA;
+  --color-background-dark: #E8E0D0;
+  --color-on-surface: #2C2C2C;
+  --color-on-surface-muted: #6B6B6B;
+  --color-on-surface-subtle: #9A9A9A;
+  --color-error: #C44;
+  --color-error-light: #FEE;
+  --color-success: #5F7A5E;
+  --color-warning: #D4A543;
+  --color-border: #E8E0D0;
+  --color-border-subtle: #F0EBE0;
 }
 
 * {
@@ -21,11 +30,26 @@
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--color-cream);
-  color: var(--color-ink);
+  background: var(--color-background);
+  color: var(--color-on-surface);
   -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
 }
 
+/* Focus states — visible focus rings on all interactive elements */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Animations */
 @keyframes breathe {
   0%, 100% { transform: scale(1); opacity: 0.6; }
   50% { transform: scale(1.4); opacity: 1; }
@@ -41,10 +65,58 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.fade-in { animation: fadeIn 0.3s ease-out; }
-.slide-up { animation: slideUp 0.4s ease-out; }
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
 
+.fade-in { animation: fadeIn 0.25s ease-out; }
+.slide-up { animation: slideUp 0.3s ease-out; }
+
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(90deg, var(--color-border-subtle) 25%, var(--color-border) 50%, var(--color-border-subtle) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* Reduced motion support — respects user preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .fade-in, .slide-up {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .breathe-animation {
+    animation: none !important;
+  }
+}
+
+/* Scrollbar styling */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(139, 168, 137, 0.3); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(139, 168, 137, 0.5); }
+
+/* Minimum touch target size enforcement */
+button, a[role="button"], .touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
