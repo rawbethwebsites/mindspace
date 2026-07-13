@@ -4,7 +4,7 @@ import { MessageCircle, BookOpen, Heart, TrendingUp, Sparkles, Wind, Brain, Cale
 import { getMoods, getTodayMood } from '../lib/db'
 
 const moodLabels = ['Struggling', 'Low', 'Okay', 'Good', 'Great']
-const moodColors = ['#e8444c', '#e8844c', '#f8b830', '#f88820', '#6ab070']
+const moodColors = ['#f0505c', '#f88820', '#f8b830', '#f8a030', '#6ab070']
 
 export default function Home() {
   const [todayMood, setTodayMood] = useState<number | null>(null)
@@ -42,7 +42,7 @@ export default function Home() {
   const todayExercise = exercises[new Date().getDay() % exercises.length]
 
   return (
-    <div className="min-h-screen pb-12 px-6 md:px-10 pt-8">
+    <div className="min-h-screen pb-12 px-6 md:px-10 pt-8" style={{ background: 'var(--gradient-warm-glow)' }}>
       <div className="max-w-5xl mx-auto">
         {/* Greeting */}
         <div className="mb-8 fade-in">
@@ -50,16 +50,16 @@ export default function Home() {
             <Calendar size={14} aria-hidden="true" />
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>
-          <h1 className="text-3xl md:text-4xl font-bold text-[var(--color-on-surface)] tracking-tight">Welcome back to Mindspace</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-[var(--color-on-surface)] tracking-tight">Welcome back to <span className="text-sunset">Mindspace</span></h1>
         </div>
 
-        {/* Stats grid — 3 cards */}
+        {/* Stats grid — 3 cards with strong contrast */}
         <div className="grid md:grid-cols-3 gap-4 mb-6">
           {/* Today's Mood */}
           <div className="card p-5">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-[var(--color-primary)]/15 flex items-center justify-center">
-                <Heart size={16} className="text-[var(--color-primary)]" aria-hidden="true" />
+              <div className="w-9 h-9 rounded-lg bg-[var(--color-primary)]/20 flex items-center justify-center">
+                <Heart size={18} className="text-[var(--color-primary)]" aria-hidden="true" />
               </div>
               <span className="text-xs font-medium text-[var(--color-on-surface-muted)] uppercase tracking-wide">Today's Mood</span>
             </div>
@@ -78,19 +78,19 @@ export default function Home() {
           {/* Streak */}
           <div className="card p-5">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-[var(--color-primary)]/15 flex items-center justify-center">
-                <TrendingUp size={16} className="text-[var(--color-primary)]" aria-hidden="true" />
+              <div className="w-9 h-9 rounded-lg bg-[var(--color-primary)]/20 flex items-center justify-center">
+                <TrendingUp size={18} className="text-[var(--color-primary)]" aria-hidden="true" />
               </div>
               <span className="text-xs font-medium text-[var(--color-on-surface-muted)] uppercase tracking-wide">Streak</span>
             </div>
-            <div className="text-3xl font-bold text-[var(--color-on-surface)]">{streak} <span className="text-sm font-normal text-[var(--color-on-surface-muted)]">days</span></div>
+            <div className="text-3xl font-bold text-[var(--color-primary)]">{streak} <span className="text-sm font-normal text-[var(--color-on-surface-muted)]">days</span></div>
           </div>
 
           {/* Suggested */}
           <div className="card p-5">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-[var(--color-primary)]/15 flex items-center justify-center">
-                <Sparkles size={16} className="text-[var(--color-primary)]" aria-hidden="true" />
+              <div className="w-9 h-9 rounded-lg bg-[var(--color-primary)]/20 flex items-center justify-center">
+                <Sparkles size={18} className="text-[var(--color-primary)]" aria-hidden="true" />
               </div>
               <span className="text-xs font-medium text-[var(--color-on-surface-muted)] uppercase tracking-wide">Suggested</span>
             </div>
@@ -100,19 +100,20 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Primary action — Start a conversation */}
+        {/* Primary action — Start a conversation (large gradient card) */}
         <div className="grid md:grid-cols-3 gap-4 mb-6">
           <Link
             to="/chat"
-            className="md:col-span-2 card card-hover p-6 relative overflow-hidden group min-h-[44px]"
+            className="md:col-span-2 rounded-2xl p-6 relative overflow-hidden group min-h-[44px] transition-all hover:scale-[1.01]"
+            style={{ background: 'var(--gradient-sunset)' }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary-dark)]/20 to-transparent opacity-50 group-hover:opacity-70 transition-opacity" aria-hidden="true" />
+            <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors" aria-hidden="true" />
             <div className="relative">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--color-primary-dark)] to-[var(--color-primary-light)] flex items-center justify-center mb-4 glow-sunset">
+              <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center mb-4">
                 <MessageCircle size={24} className="text-white" aria-hidden="true" />
               </div>
-              <h3 className="font-semibold text-xl text-[var(--color-on-surface)] mb-1.5">Start a conversation</h3>
-              <p className="text-sm text-[var(--color-on-surface-muted)]">Talk through what's on your mind with AI support</p>
+              <h3 className="font-semibold text-xl text-white mb-1.5">Start a conversation</h3>
+              <p className="text-sm text-white/85">Talk through what's on your mind with AI support</p>
             </div>
           </Link>
 
@@ -120,11 +121,11 @@ export default function Home() {
             to="/journal"
             className="card card-hover p-6 group min-h-[44px]"
           >
-            <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-hover)] flex items-center justify-center mb-4">
+            <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-light)] flex items-center justify-center mb-4">
               <BookOpen size={24} className="text-[var(--color-secondary)]" aria-hidden="true" />
             </div>
             <h3 className="font-semibold text-lg text-[var(--color-on-surface)] mb-1.5">Write in journal</h3>
-            <p className="text-sm text-[var(--color-on-surface-muted)]">Reflect and get an AI reflection on your entry</p>
+            <p className="text-sm text-[var(--color-on-surface-muted)]">Reflect and get an AI reflection</p>
           </Link>
         </div>
 
@@ -142,7 +143,7 @@ export default function Home() {
                   <div key={i} className="flex-1 flex flex-col items-center gap-1">
                     <div
                       className="w-full rounded-t-lg"
-                      style={{ height: `${(m.mood / 4) * 100}%`, background: `linear-gradient(to top, ${moodColors[m.mood]}40, ${moodColors[m.mood]})` }}
+                      style={{ height: `${(m.mood / 4) * 100}%`, background: `linear-gradient(to top, ${moodColors[m.mood]}50, ${moodColors[m.mood]})` }}
                     />
                     <span className="text-xs text-[var(--color-on-surface-muted)]">{moodLabels[m.mood].slice(0, 1)}</span>
                   </div>
@@ -153,10 +154,10 @@ export default function Home() {
 
           {/* Exercise suggestion */}
           <div className="card p-5 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/8 to-transparent" aria-hidden="true" />
+            <div className="absolute inset-0" style={{ background: 'var(--gradient-sunset-soft)' }} aria-hidden="true" />
             <div className="relative">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-[var(--color-primary)]/15 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-[var(--color-primary)]/20 flex items-center justify-center">
                   <todayExercise.icon size={20} className="text-[var(--color-primary)]" aria-hidden="true" />
                 </div>
                 <div>

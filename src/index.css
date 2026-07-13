@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* Sunset Dark Palette — warm, premium, dark theme */
+  /* Sunset Dark Palette — warm, premium, high contrast */
   --color-primary: #f88820;
   --color-primary-dark: #ea6113;
   --color-primary-light: #f8b830;
@@ -9,27 +9,32 @@
   --color-secondary-dark: #d49520;
   --color-accent: #f8e0b0;
 
-  --color-surface: #2c2018;
-  --color-surface-elevated: #382820;
-  --color-surface-hover: #40281c;
-  --color-background: #201814;
-  --color-background-dark: #181210;
+  /* High contrast surfaces — cards much lighter than background */
+  --color-surface: #3a2820;
+  --color-surface-elevated: #4a3028;
+  --color-surface-hover: #5a3830;
+  --color-surface-light: #5a4035;
+  --color-background: #1a1210;
+  --color-background-dark: #120c0a;
 
-  --color-on-surface: #f8e0b0;
-  --color-on-surface-muted: #a89080;
-  --color-on-surface-subtle: #6a5848;
+  /* Bright text for readability */
+  --color-on-surface: #f8e8c8;
+  --color-on-surface-muted: #c8a888;
+  --color-on-surface-subtle: #886848;
 
-  --color-error: #e8444c;
+  --color-error: #f0505c;
   --color-error-light: #3a1818;
   --color-success: #6ab070;
   --color-warning: #f8b830;
-  --color-border: #40281c;
-  --color-border-subtle: #382018;
+  --color-border: #5a3828;
+  --color-border-subtle: #4a2818;
+  --color-border-light: #6a4838;
 
   /* Gradients */
   --gradient-sunset: linear-gradient(135deg, #ea6113 0%, #f88820 50%, #f8b830 100%);
-  --gradient-sunset-soft: linear-gradient(135deg, rgba(234,97,19,0.15) 0%, rgba(248,136,32,0.12) 50%, rgba(248,184,48,0.08) 100%);
-  --gradient-surface: linear-gradient(145deg, #2c2018 0%, #382820 100%);
+  --gradient-sunset-soft: linear-gradient(135deg, rgba(234,97,19,0.2) 0%, rgba(248,136,32,0.15) 50%, rgba(248,184,48,0.1) 100%);
+  --gradient-surface: linear-gradient(145deg, #3a2820 0%, #4a3028 100%);
+  --gradient-warm-glow: radial-gradient(circle at 50% 0%, rgba(248,136,32,0.08) 0%, transparent 70%);
 }
 
 * {
@@ -46,7 +51,7 @@ body {
   line-height: 1.5;
 }
 
-/* Focus states — visible focus rings using sunset orange */
+/* Focus states */
 *:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
@@ -88,17 +93,19 @@ a:focus-visible {
 .fade-in { animation: fadeIn 0.25s ease-out; }
 .slide-up { animation: slideUp 0.3s ease-out; }
 
-/* Card style — elevated warm surface with subtle border */
+/* Card style — clearly elevated with visible border and warm gradient */
 .card {
   background: var(--gradient-surface);
   border: 1px solid var(--color-border);
   border-radius: 16px;
-  transition: border-color 0.2s, transform 0.2s;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 .card-hover:hover {
-  border-color: rgba(248,136,32,0.3);
+  border-color: var(--color-primary);
   transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(248,136,32,0.12);
 }
 
 /* Skeleton loading */
@@ -109,12 +116,20 @@ a:focus-visible {
   border-radius: 8px;
 }
 
-/* Glow effect for primary cards */
+/* Glow effect for primary elements */
 .glow-sunset {
-  box-shadow: 0 4px 24px rgba(248,136,32,0.12);
+  box-shadow: 0 4px 20px rgba(248,136,32,0.25);
 }
 
-/* Reduced motion support — respects user preference */
+/* Sunset gradient text */
+.text-sunset {
+  background: var(--gradient-sunset);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -134,13 +149,13 @@ a:focus-visible {
   }
 }
 
-/* Scrollbar styling — warm sunset tones */
+/* Scrollbar styling */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--color-background-dark); }
-::-webkit-scrollbar-thumb { background: rgba(248,136,32,0.2); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(248,136,32,0.4); }
+::-webkit-scrollbar-thumb { background: rgba(248,136,32,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(248,136,32,0.5); }
 
-/* Minimum touch target size enforcement */
+/* Minimum touch target size */
 button, a[role="button"], .touch-target {
   min-height: 44px;
   min-width: 44px;
