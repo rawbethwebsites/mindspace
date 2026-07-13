@@ -1,7 +1,7 @@
 import { SYSTEM_PROMPT, JOURNAL_REFLECTION_PROMPT } from './prompts'
 
 const OLLAMA_URL = import.meta.env.VITE_OLLAMA_URL || 'http://localhost:11434'
-const OLLAMA_MODEL = import.meta.env.VITE_OLLAMA_MODEL || 'llama3.2'
+const OLLAMA_MODEL = import.meta.env.VITE_OLLAMA_MODEL || 'gemma4:latest'
 
 interface Message {
   role: 'user' | 'assistant' | 'system'

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Send, Plus, MessageCircle, Trash2, Loader2 } from 'lucide-react'
-import { streamChat } from '../lib/ai'
+import { streamChat, checkOllamaConnection } from '../lib/ai'
 import { detectCrisis } from '../lib/crisis'
 import { saveConversation, getAllConversations, deleteConversation, type ChatMessage } from '../lib/db'
 
@@ -12,11 +12,26 @@ export default function Chat() {
   const [streaming, setStreaming] = useState(false)
   const [streamContent, setStreamContent] = useState('')
   const [showConvList, setShowConvList] = useState(false)
+  const [online, setOnline] = useState<boolean | null>(null)
   const abortRef = useRef<AbortController | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     loadConversations()
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    const poll = async () => {
+      const ok = await checkOllamaConnection()
+      if (!cancelled) setOnline(ok)
+    }
+    poll()
+    const interval = setInterval(poll, 20000)
+    return () => {
+      cancelled = true
+      clearInterval(interval)
+    }
   }, [])
 
   useEffect(() => {
@@ -92,6 +107,7 @@ export default function Chat() {
           timestamp: Date.now(),
         }
         setMessages([...newMessages, errMsg])
+        checkOllamaConnection().then(setOnline)
       }
     } finally {
       setStreaming(false)
@@ -161,6 +177,19 @@ export default function Chat() {
             <h2 className="font-semibold text-[var(--color-on-surface)] text-sm">Mindspace AI</h2>
             <p className="text-xs text-[var(--color-on-surface-muted)]">Supportive · Non-judgmental</p>
           </div>
+          {online !== null && (
+            <span
+              className={`ml-auto flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full ${
+                online
+                  ? 'text-[var(--color-success)] bg-[var(--color-success)]/10'
+                  : 'text-[var(--color-on-surface-muted)] bg-[var(--color-surface)]'
+              }`}
+              role="status"
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${online ? 'bg-[var(--color-success)]' : 'bg-[var(--color-on-surface-muted)]'}`} aria-hidden="true" />
+              {online ? 'AI online' : 'AI offline'}
+            </span>
+          )}
         </div>
 
         {/* Messages */}
@@ -218,6 +247,11 @@ export default function Chat() {
 
         {/* Input */}
         <div className="border-t border-[var(--color-border)] p-4 max-w-3xl mx-auto w-full bg-[var(--color-background-dark)]">
+          {online === false && (
+            <p className="text-xs text-[var(--color-on-surface-muted)] mb-2.5" role="status">
+              Mindspace AI is offline right now — it runs on a personal device that isn't reachable at the moment. Please try again later.
+            </p>
+          )}
           <div className="flex items-end gap-2">
             <textarea
               value={input}
@@ -228,15 +262,15 @@ export default function Chat() {
                   handleSend()
                 }
               }}
-              placeholder="Share what's on your mind..."
+              placeholder={online === false ? 'AI is offline right now...' : "Share what's on your mind..."}
               rows={1}
               aria-label="Type your message"
-              className="flex-1 resize-none px-4 py-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-sm text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-subtle)] focus:outline-none focus:border-[var(--color-primary)] transition-colors max-h-32"
-              disabled={streaming}
+              className="flex-1 resize-none px-4 py-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-sm text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-subtle)] focus:outline-none focus:border-[var(--color-primary)] transition-colors max-h-32 disabled:opacity-60"
+              disabled={streaming || online === false}
             />
             <button
               onClick={handleSend}
-              disabled={!input.trim() || streaming}
+              disabled={!input.trim() || streaming || online === false}
               aria-label="Send message"
               className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--color-primary-dark)] to-[var(--color-primary)] text-white flex items-center justify-center hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
             >
