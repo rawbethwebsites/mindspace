@@ -71,7 +71,7 @@ export default function Journal() {
 
   if (editing) {
     return (
-      <div className="min-h-screen pb-12 px-6 md:px-12 pt-8">
+      <div className="min-h-screen pb-12 px-6 md:px-10 pt-8">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold text-[var(--color-on-surface)]">{editId ? 'Edit Entry' : 'New Entry'}</h1>
@@ -82,7 +82,7 @@ export default function Journal() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Title..."
-            className="w-full px-4 py-3 rounded-xl bg-white border border-[var(--color-border)] text-lg font-semibold text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-muted)]/50 focus:outline-none focus:border-[var(--color-primary)] transition-colors mb-4"
+            className="w-full px-4 py-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-lg font-semibold text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-subtle)] focus:outline-none focus:border-[var(--color-primary)] transition-colors mb-4"
           />
 
           <textarea
@@ -90,30 +90,33 @@ export default function Journal() {
             onChange={(e) => setBody(e.target.value)}
             placeholder="Write freely... this is your space."
             rows={12}
-            className="w-full px-4 py-3 rounded-xl bg-white border border-[var(--color-border)] text-sm text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-muted)]/50 focus:outline-none focus:border-[var(--color-primary)] transition-colors resize-none mb-4 leading-relaxed"
+            className="w-full px-4 py-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-sm text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-subtle)] focus:outline-none focus:border-[var(--color-primary)] transition-colors resize-none mb-4 leading-relaxed"
           />
 
           {reflection && (
-            <div className="bg-gradient-to-br from-[var(--color-primary)]/10 to-[#A8C5D6]/10 rounded-xl p-4 border border-[var(--color-primary)]/20 mb-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles size={16} className="text-[var(--color-primary-dark)]" />
-                <span className="text-xs font-semibold text-[var(--color-primary-dark)] uppercase tracking-wide">AI Reflection</span>
+            <div className="card p-4 mb-4 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/8 to-transparent" aria-hidden="true" />
+              <div className="relative">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles size={16} className="text-[var(--color-primary)]" />
+                  <span className="text-xs font-semibold text-[var(--color-primary)] uppercase tracking-wide">AI Reflection</span>
+                </div>
+                <p className="text-sm text-[var(--color-on-surface)] italic leading-relaxed">{reflection}</p>
               </div>
-              <p className="text-sm text-[var(--color-on-surface)] italic leading-relaxed">{reflection}</p>
             </div>
           )}
 
           <div className="flex gap-3">
             <button
               onClick={handleSave}
-              className="flex-1 py-3 rounded-xl bg-[var(--color-primary)] text-white font-medium hover:bg-[var(--color-primary-dark)] transition-colors"
+              className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] text-white font-medium hover:opacity-90 transition-opacity"
             >
               Save Entry
             </button>
             <button
               onClick={handleReflection}
               disabled={!body.trim() || gettingReflection}
-              className="px-4 py-3 rounded-xl bg-white border border-[var(--color-primary)]/30 text-[var(--color-primary-dark)] font-medium hover:bg-[var(--color-primary)]/8 transition-colors disabled:opacity-40 flex items-center gap-2"
+              className="px-4 py-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-primary)]/30 text-[var(--color-primary)] font-medium hover:bg-[var(--color-surface-hover)] transition-colors disabled:opacity-40 flex items-center gap-2"
             >
               {gettingReflection ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
               {reflection ? 'New Reflection' : 'Get Reflection'}
@@ -125,7 +128,7 @@ export default function Journal() {
   }
 
   return (
-    <div className="min-h-screen pb-12 px-6 md:px-12 pt-8">
+    <div className="min-h-screen pb-12 px-6 md:px-10 pt-8">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -134,7 +137,7 @@ export default function Journal() {
           </div>
           <button
             onClick={newEntry}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary-dark)] transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] text-white text-sm font-medium hover:opacity-90 transition-opacity"
           >
             <Plus size={16} /> New Entry
           </button>
@@ -149,7 +152,7 @@ export default function Journal() {
             <p className="text-sm text-[var(--color-on-surface-muted)] mb-6">Writing can help you process and reflect. Start your first entry.</p>
             <button
               onClick={newEntry}
-              className="px-6 py-3 rounded-xl bg-[var(--color-primary)] text-white font-medium hover:bg-[var(--color-primary-dark)] transition-colors"
+              className="px-6 py-3 rounded-xl bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] text-white font-medium hover:opacity-90 transition-opacity"
             >
               Write first entry
             </button>
@@ -160,25 +163,25 @@ export default function Journal() {
               <div
                 key={entry.id}
                 onClick={() => editEntry(entry)}
-                className="bg-white rounded-2xl p-5 border border-[var(--color-border)] cursor-pointer hover:border-[var(--color-primary)]/30 transition-colors group"
+                className="card card-hover p-5 cursor-pointer group"
               >
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="font-semibold text-[var(--color-on-surface)]">{entry.title}</h3>
                   <button
                     onClick={(e) => { e.stopPropagation(); handleDelete(entry.id) }}
-                    className="opacity-0 group-hover:opacity-100 text-[var(--color-on-surface-muted)] hover:text-red-500 transition-all"
+                    className="opacity-0 group-hover:opacity-100 text-[var(--color-on-surface-muted)] hover:text-[var(--color-error)] transition-all"
                   >
                     <Trash2 size={16} />
                   </button>
                 </div>
                 <p className="text-sm text-[var(--color-on-surface-muted)] line-clamp-2 mb-3">{entry.body}</p>
                 {entry.reflection && (
-                  <div className="flex items-start gap-2 text-xs text-[var(--color-primary-dark)] italic">
+                  <div className="flex items-start gap-2 text-xs text-[var(--color-primary)] italic">
                     <Sparkles size={12} className="mt-0.5 shrink-0" />
                     <span className="line-clamp-2">{entry.reflection}</span>
                   </div>
                 )}
-                <p className="text-xs text-[var(--color-on-surface-muted)]/60 mt-2">
+                <p className="text-xs text-[var(--color-on-surface-subtle)] mt-2">
                   {new Date(entry.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </p>
               </div>

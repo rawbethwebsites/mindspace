@@ -4,7 +4,7 @@ import { getMoods, saveMood, getTodayMood } from '../lib/db'
 
 const moodIcons = [Frown, Frown, Meh, Smile, Laugh]
 const moodLabels = ['Struggling', 'Low', 'Okay', 'Good', 'Great']
-const moodColors = ['#c44', '#e88', '#aa9', '#7a9', '#5a7']
+const moodColors = ['#e8444c', '#e8844c', '#f8b830', '#f88820', '#6ab070']
 
 export default function Mood() {
   const [selected, setSelected] = useState<number | null>(null)
@@ -50,15 +50,15 @@ export default function Mood() {
   })()
 
   return (
-    <div className="min-h-screen pb-12 px-6 md:px-12 pt-8">
+    <div className="min-h-screen pb-12 px-6 md:px-10 pt-8">
       <div className="max-w-3xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-[var(--color-on-surface)] mb-2">How are you feeling?</h1>
           <p className="text-sm text-[var(--color-on-surface-muted)]">Take a moment to check in with yourself. No judgment, just honesty.</p>
         </div>
 
-        {/* Mood picker — SVG icons, not emojis */}
-        <div className="bg-[var(--color-surface)] rounded-2xl p-6 border border-[var(--color-border)] mb-6">
+        {/* Mood picker */}
+        <div className="card p-6 mb-6">
           <div className="flex justify-between gap-2 mb-6">
             {moodIcons.map((Icon, i) => (
               <button
@@ -69,7 +69,7 @@ export default function Mood() {
                 className={`flex-1 flex flex-col items-center gap-2 py-4 rounded-xl transition-all min-h-[44px] ${
                   selected === i
                     ? 'bg-[var(--color-primary)]/15 scale-105'
-                    : 'hover:bg-[var(--color-primary)]/8'
+                    : 'hover:bg-[var(--color-surface-hover)]'
                 }`}
               >
                 <Icon
@@ -83,7 +83,7 @@ export default function Mood() {
             ))}
           </div>
 
-          <label htmlFor="mood-note" className="text-sm font-medium text-[var(--color-on-surface-muted)] mb-2 block">What&apos;s behind this feeling? (optional)</label>
+          <label htmlFor="mood-note" className="text-sm font-medium text-[var(--color-on-surface-muted)] mb-2 block">What's behind this feeling? (optional)</label>
           <textarea
             id="mood-note"
             value={note}
@@ -97,15 +97,17 @@ export default function Mood() {
             onClick={handleSave}
             disabled={selected === null}
             aria-label={todaySet ? 'Update mood check-in' : 'Save mood check-in'}
-            className="w-full py-3 rounded-xl bg-[var(--color-primary)] text-white font-medium hover:bg-[var(--color-primary-dark)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed min-h-[44px]"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed min-h-[44px]"
           >
             {saved ? '✓ Saved' : todaySet ? 'Update check-in' : 'Save check-in'}
           </button>
         </div>
 
         {/* Streak */}
-        <div className="flex items-center gap-3 mb-6 p-4 bg-gradient-to-r from-[var(--color-primary)]/10 to-[var(--color-secondary)]/10 rounded-xl">
-          <TrendingUp size={20} className="text-[var(--color-primary-dark)]" aria-hidden="true" />
+        <div className="flex items-center gap-3 mb-6 p-4 card">
+          <div className="w-10 h-10 rounded-xl bg-[var(--color-primary)]/15 flex items-center justify-center">
+            <TrendingUp size={20} className="text-[var(--color-primary)]" aria-hidden="true" />
+          </div>
           <span className="text-sm font-medium text-[var(--color-on-surface)]">
             {streak > 0 ? `${streak}-day streak — keep it up` : 'Check in daily to build your streak'}
           </span>
@@ -113,10 +115,10 @@ export default function Mood() {
 
         {/* History */}
         {moods.length > 0 && (
-          <div className="bg-[var(--color-surface)] rounded-2xl p-6 border border-[var(--color-border)]">
-            <h2 className="text-sm font-semibold text-[var(--color-on-surface-muted)] uppercase tracking-wide mb-4">Mood History</h2>
+          <div className="card p-6">
+            <h2 className="text-xs font-semibold text-[var(--color-on-surface-muted)] uppercase tracking-wide mb-4">Mood History</h2>
 
-            {/* Chart — accessible with aria-label */}
+            {/* Chart */}
             <div
               className="flex items-end justify-between gap-1 h-32 mb-6"
               role="img"
@@ -128,10 +130,10 @@ export default function Mood() {
                     className="w-full rounded-t-lg transition-all hover:opacity-80"
                     style={{
                       height: `${(m.mood / 4) * 100}%`,
-                      backgroundColor: moodColors[m.mood],
+                      background: `linear-gradient(to top, ${moodColors[m.mood]}40, ${moodColors[m.mood]})`,
                     }}
                   />
-                  <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity absolute -top-8 whitespace-nowrap bg-[var(--color-on-surface)] text-white text-[10px] px-2 py-1 rounded">
+                  <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity absolute -top-8 whitespace-nowrap bg-[var(--color-surface-elevated)] text-[var(--color-on-surface)] text-[10px] px-2 py-1 rounded border border-[var(--color-border)]">
                     {moodLabels[m.mood]} · {m.date.slice(5)}
                   </span>
                 </div>

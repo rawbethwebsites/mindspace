@@ -17,7 +17,7 @@ export default function Exercises() {
   if (active === 'body-scan') return <BodyScanExercise onBack={() => setActive(null)} />
 
   return (
-    <div className="min-h-screen pb-12 px-6 md:px-12 pt-8">
+    <div className="min-h-screen pb-12 px-6 md:px-10 pt-8">
       <div className="max-w-3xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-[var(--color-on-surface)] mb-2">Guided Exercises</h1>
@@ -30,11 +30,11 @@ export default function Exercises() {
               key={ex.id}
               onClick={() => setActive(ex.id)}
               aria-label={`Start ${ex.name} exercise`}
-              className="bg-[var(--color-surface)] rounded-2xl p-6 border border-[var(--color-border)] text-left hover:border-[var(--color-primary)]/40 hover:scale-[1.01] transition-all min-h-[44px]"
+              className="card card-hover p-6 text-left min-h-[44px]"
             >
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-xl bg-[var(--color-primary)]/10 flex items-center justify-center" aria-hidden="true">
-                  <ex.icon size={20} className="text-[var(--color-primary-dark)]" />
+                  <ex.icon size={20} className="text-[var(--color-primary)]" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-[var(--color-on-surface)]">{ex.name}</h3>
@@ -99,7 +99,7 @@ function BreathingExercise({ onBack }: { onBack: () => void }) {
       <div className="relative flex items-center justify-center mb-12" style={{ width: 250, height: 250 }}>
         <div className="absolute inset-0 rounded-full bg-[var(--color-primary)]/10" aria-hidden="true" />
         <div
-          className="rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center transition-all duration-1000 ease-in-out"
+          className="rounded-full bg-gradient-to-br from-[var(--color-primary-dark)] to-[var(--color-primary-light)] flex items-center justify-center transition-all duration-1000 ease-in-out glow-sunset"
           style={{ width: 150, height: 150, transform: `scale(${running ? scale : 1})` }}
         >
           <div className="text-center text-white">
@@ -113,7 +113,7 @@ function BreathingExercise({ onBack }: { onBack: () => void }) {
         <button
           onClick={() => setRunning(true)}
           aria-label="Start breathing exercise"
-          className="px-8 py-3 rounded-xl bg-[var(--color-primary)] text-white font-medium hover:bg-[var(--color-primary-dark)] transition-colors min-h-[44px]"
+          className="px-8 py-3 rounded-xl bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] text-white font-medium hover:opacity-90 transition-opacity min-h-[44px]"
         >
           Start
         </button>
@@ -149,14 +149,14 @@ function GroundingExercise({ onBack }: { onBack: () => void }) {
         <BackButton onBack={onBack} />
         <div className="text-center">
           <div className="w-16 h-16 rounded-2xl bg-[var(--color-primary)]/15 flex items-center justify-center mx-auto mb-4">
-            <Check size={28} className="text-[var(--color-primary-dark)]" aria-hidden="true" />
+            <Check size={28} className="text-[var(--color-primary)]" aria-hidden="true" />
           </div>
-          <h1 className="text-2xl font-bold text-[var(--color-on-surface)] mb-2">You&apos;re here.</h1>
-          <p className="text-sm text-[var(--color-on-surface-muted)] mb-6 max-w-sm">You&apos;ve grounded yourself using your senses. Notice how you feel now compared to when you started.</p>
+          <h1 className="text-2xl font-bold text-[var(--color-on-surface)] mb-2">You're here.</h1>
+          <p className="text-sm text-[var(--color-on-surface-muted)] mb-6 max-w-sm">You've grounded yourself using your senses. Notice how you feel now compared to when you started.</p>
           <button
             onClick={onBack}
             aria-label="Complete exercise"
-            className="px-6 py-3 rounded-xl bg-[var(--color-primary)] text-white font-medium hover:bg-[var(--color-primary-dark)] transition-colors min-h-[44px]"
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] text-white font-medium hover:opacity-90 transition-opacity min-h-[44px]"
           >
             Done
           </button>
@@ -172,7 +172,7 @@ function GroundingExercise({ onBack }: { onBack: () => void }) {
       <BackButton onBack={onBack} />
       <div className="text-center max-w-md">
         <div className="w-16 h-16 rounded-2xl bg-[var(--color-primary)]/10 flex items-center justify-center mx-auto mb-4" aria-hidden="true">
-          <s.icon size={28} className="text-[var(--color-primary-dark)]" />
+          <s.icon size={28} className="text-[var(--color-primary)]" />
         </div>
         <p className="text-sm text-[var(--color-on-surface-muted)] uppercase tracking-wide mb-2">Step {step + 1} of 5</p>
         <h1 className="text-2xl font-bold text-[var(--color-on-surface)] mb-3">Things you can {s.sense}</h1>
@@ -187,7 +187,7 @@ function GroundingExercise({ onBack }: { onBack: () => void }) {
         <button
           onClick={() => setStep(step + 1)}
           aria-label={step === 4 ? 'Complete grounding exercise' : 'Go to next step'}
-          className="px-8 py-3 rounded-xl bg-[var(--color-primary)] text-white font-medium hover:bg-[var(--color-primary-dark)] transition-colors min-h-[44px]"
+          className="px-8 py-3 rounded-xl bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] text-white font-medium hover:opacity-90 transition-opacity min-h-[44px]"
         >
           {step === 4 ? 'Complete' : 'Next'}
         </button>
@@ -215,7 +215,7 @@ function CBTExercise({ onBack }: { onBack: () => void }) {
   ]
 
   return (
-    <div className="min-h-screen pb-12 px-6 md:px-12 pt-8">
+    <div className="min-h-screen pb-12 px-6 md:px-10 pt-8">
       <div className="max-w-2xl mx-auto">
         <BackButton onBack={onBack} />
         <h1 className="text-2xl font-bold text-[var(--color-on-surface)] mb-2 mt-4">CBT Thought Record</h1>
@@ -223,7 +223,7 @@ function CBTExercise({ onBack }: { onBack: () => void }) {
 
         <div className="space-y-4">
           {fields.map((f, i) => (
-            <div key={i} className="bg-[var(--color-surface)] rounded-2xl p-5 border border-[var(--color-border)]">
+            <div key={i} className="card p-5">
               <label htmlFor={`cbt-field-${i}`} className="text-sm font-semibold text-[var(--color-on-surface)] mb-2 block">{f.label}</label>
               {f.rows === 1 ? (
                 <input
@@ -249,20 +249,23 @@ function CBTExercise({ onBack }: { onBack: () => void }) {
           <button
             onClick={() => setShowResult(true)}
             aria-label="Complete CBT exercise"
-            className="w-full py-3 rounded-xl bg-[var(--color-primary)] text-white font-medium hover:bg-[var(--color-primary-dark)] transition-colors min-h-[44px]"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] text-white font-medium hover:opacity-90 transition-opacity min-h-[44px]"
           >
             Complete Exercise
           </button>
         </div>
 
         {showResult && (
-          <div className="mt-6 bg-gradient-to-br from-[var(--color-primary)]/10 to-[var(--color-secondary)]/10 rounded-2xl p-5 border border-[var(--color-primary)]/20 fade-in">
-            <div className="flex items-center gap-2 mb-2">
-              <Check size={18} className="text-[var(--color-primary-dark)]" aria-hidden="true" />
-              <h3 className="font-semibold text-[var(--color-primary-dark)]">Well done</h3>
+          <div className="mt-6 card p-5 fade-in relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/8 to-transparent" aria-hidden="true" />
+            <div className="relative">
+              <div className="flex items-center gap-2 mb-2">
+                <Check size={18} className="text-[var(--color-primary)]" aria-hidden="true" />
+                <h3 className="font-semibold text-[var(--color-primary)]">Well done</h3>
+              </div>
+              <p className="text-sm text-[var(--color-on-surface)]">You've taken an important step. By examining the evidence, you've given yourself a more balanced perspective. Remember: thoughts are not facts.</p>
+              <button onClick={onBack} className="mt-4 text-sm text-[var(--color-primary)] hover:underline min-h-[44px]">Back to exercises →</button>
             </div>
-            <p className="text-sm text-[var(--color-on-surface)]">You&apos;ve taken an important step. By examining the evidence, you&apos;ve given yourself a more balanced perspective. Remember: thoughts are not facts.</p>
-            <button onClick={onBack} className="mt-4 text-sm text-[var(--color-secondary)] hover:underline min-h-[44px]">Back to exercises →</button>
           </div>
         )}
       </div>
@@ -303,14 +306,14 @@ function BodyScanExercise({ onBack }: { onBack: () => void }) {
           <button
             onClick={() => setRunning(true)}
             aria-label="Begin body scan"
-            className="px-8 py-3 rounded-xl bg-[var(--color-primary)] text-white font-medium hover:bg-[var(--color-primary-dark)] transition-colors min-h-[44px]"
+            className="px-8 py-3 rounded-xl bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] text-white font-medium hover:opacity-90 transition-opacity min-h-[44px]"
           >
             Begin
           </button>
         ) : step < steps.length ? (
           <div className="fade-in">
             <div className="w-32 h-32 rounded-full bg-[var(--color-primary)]/15 flex items-center justify-center mx-auto mb-6" aria-hidden="true">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] animate-pulse" />
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--color-primary-dark)] to-[var(--color-primary-light)] animate-pulse glow-sunset" />
             </div>
             <p className="text-lg text-[var(--color-on-surface)] leading-relaxed" role="status" aria-live="polite">{steps[step]}</p>
             <p className="text-xs text-[var(--color-on-surface-muted)] mt-4">Step {step + 1} of {steps.length}</p>
@@ -318,14 +321,14 @@ function BodyScanExercise({ onBack }: { onBack: () => void }) {
         ) : (
           <div className="fade-in">
             <div className="w-16 h-16 rounded-2xl bg-[var(--color-primary)]/15 flex items-center justify-center mx-auto mb-4">
-              <Check size={28} className="text-[var(--color-primary-dark)]" aria-hidden="true" />
+              <Check size={28} className="text-[var(--color-primary)]" aria-hidden="true" />
             </div>
             <h2 className="text-xl font-semibold text-[var(--color-on-surface)] mb-2">Complete</h2>
             <p className="text-sm text-[var(--color-on-surface-muted)] mb-6">Notice how your body feels now. Carry this calm with you.</p>
             <button
               onClick={() => { setRunning(false); setStep(0); onBack() }}
               aria-label="Finish body scan"
-              className="px-6 py-3 rounded-xl bg-[var(--color-primary)] text-white font-medium hover:bg-[var(--color-primary-dark)] transition-colors min-h-[44px]"
+              className="px-6 py-3 rounded-xl bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] text-white font-medium hover:opacity-90 transition-opacity min-h-[44px]"
             >
               Done
             </button>

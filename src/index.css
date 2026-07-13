@@ -1,25 +1,35 @@
 @import "tailwindcss";
 
 @theme {
-  /* Semantic color tokens — never use raw hex in components */
-  --color-primary: #8BA889;
-  --color-primary-dark: #5F7A5E;
-  --color-primary-light: #B4C9B0;
-  --color-secondary: #6B9BB5;
-  --color-secondary-dark: #4A7A94;
-  --color-surface: #FFFFFF;
-  --color-surface-elevated: #FDFDFD;
-  --color-background: #F5F1EA;
-  --color-background-dark: #E8E0D0;
-  --color-on-surface: #2C2C2C;
-  --color-on-surface-muted: #6B6B6B;
-  --color-on-surface-subtle: #9A9A9A;
-  --color-error: #C44;
-  --color-error-light: #FEE;
-  --color-success: #5F7A5E;
-  --color-warning: #D4A543;
-  --color-border: #E8E0D0;
-  --color-border-subtle: #F0EBE0;
+  /* Sunset Dark Palette — warm, premium, dark theme */
+  --color-primary: #f88820;
+  --color-primary-dark: #ea6113;
+  --color-primary-light: #f8b830;
+  --color-secondary: #f8b830;
+  --color-secondary-dark: #d49520;
+  --color-accent: #f8e0b0;
+
+  --color-surface: #2c2018;
+  --color-surface-elevated: #382820;
+  --color-surface-hover: #40281c;
+  --color-background: #201814;
+  --color-background-dark: #181210;
+
+  --color-on-surface: #f8e0b0;
+  --color-on-surface-muted: #a89080;
+  --color-on-surface-subtle: #6a5848;
+
+  --color-error: #e8444c;
+  --color-error-light: #3a1818;
+  --color-success: #6ab070;
+  --color-warning: #f8b830;
+  --color-border: #40281c;
+  --color-border-subtle: #382018;
+
+  /* Gradients */
+  --gradient-sunset: linear-gradient(135deg, #ea6113 0%, #f88820 50%, #f8b830 100%);
+  --gradient-sunset-soft: linear-gradient(135deg, rgba(234,97,19,0.15) 0%, rgba(248,136,32,0.12) 50%, rgba(248,184,48,0.08) 100%);
+  --gradient-surface: linear-gradient(145deg, #2c2018 0%, #382820 100%);
 }
 
 * {
@@ -36,7 +46,7 @@ body {
   line-height: 1.5;
 }
 
-/* Focus states — visible focus rings on all interactive elements */
+/* Focus states — visible focus rings using sunset orange */
 *:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
@@ -70,8 +80,26 @@ a:focus-visible {
   100% { background-position: 200% 0; }
 }
 
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(248,136,32,0.15); }
+  50% { box-shadow: 0 0 30px rgba(248,136,32,0.3); }
+}
+
 .fade-in { animation: fadeIn 0.25s ease-out; }
 .slide-up { animation: slideUp 0.3s ease-out; }
+
+/* Card style — elevated warm surface with subtle border */
+.card {
+  background: var(--gradient-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.card-hover:hover {
+  border-color: rgba(248,136,32,0.3);
+  transform: translateY(-2px);
+}
 
 /* Skeleton loading */
 .skeleton {
@@ -79,6 +107,11 @@ a:focus-visible {
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 8px;
+}
+
+/* Glow effect for primary cards */
+.glow-sunset {
+  box-shadow: 0 4px 24px rgba(248,136,32,0.12);
 }
 
 /* Reduced motion support — respects user preference */
@@ -101,11 +134,11 @@ a:focus-visible {
   }
 }
 
-/* Scrollbar styling */
+/* Scrollbar styling — warm sunset tones */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(139, 168, 137, 0.3); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(139, 168, 137, 0.5); }
+::-webkit-scrollbar-track { background: var(--color-background-dark); }
+::-webkit-scrollbar-thumb { background: rgba(248,136,32,0.2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(248,136,32,0.4); }
 
 /* Minimum touch target size enforcement */
 button, a[role="button"], .touch-target {

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { MessageCircle, BookOpen, Heart, TrendingUp, Sparkles, Wind, Brain, Calendar } from 'lucide-react'
+import { MessageCircle, BookOpen, Heart, TrendingUp, Sparkles, Wind, Brain, Calendar, ArrowRight } from 'lucide-react'
 import { getMoods, getTodayMood } from '../lib/db'
 
 const moodLabels = ['Struggling', 'Low', 'Okay', 'Good', 'Great']
+const moodColors = ['#e8444c', '#e8844c', '#f8b830', '#f88820', '#6ab070']
 
 export default function Home() {
   const [todayMood, setTodayMood] = useState<number | null>(null)
@@ -41,105 +42,133 @@ export default function Home() {
   const todayExercise = exercises[new Date().getDay() % exercises.length]
 
   return (
-    <div className="min-h-screen pb-12 px-6 md:px-12 pt-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen pb-12 px-6 md:px-10 pt-8">
+      <div className="max-w-5xl mx-auto">
         {/* Greeting */}
         <div className="mb-8 fade-in">
-          <p className="text-sm text-[var(--color-on-surface-muted)] mb-1 flex items-center gap-1.5">
+          <p className="text-sm text-[var(--color-on-surface-muted)] mb-1.5 flex items-center gap-1.5">
             <Calendar size={14} aria-hidden="true" />
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>
-          <h1 className="text-3xl font-bold text-[var(--color-on-surface)]">Welcome back to Mindspace</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-[var(--color-on-surface)] tracking-tight">Welcome back to Mindspace</h1>
         </div>
 
-        {/* Quick stats */}
-        <div className="grid md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-[var(--color-surface)] rounded-2xl p-5 border border-[var(--color-border)]">
-            <div className="flex items-center gap-2 mb-2">
-              <Heart size={16} className="text-[var(--color-primary)]" aria-hidden="true" />
-              <span className="text-xs font-medium text-[var(--color-on-surface-muted)] uppercase tracking-wide">Today&apos;s Mood</span>
+        {/* Stats grid — 3 cards */}
+        <div className="grid md:grid-cols-3 gap-4 mb-6">
+          {/* Today's Mood */}
+          <div className="card p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded-lg bg-[var(--color-primary)]/15 flex items-center justify-center">
+                <Heart size={16} className="text-[var(--color-primary)]" aria-hidden="true" />
+              </div>
+              <span className="text-xs font-medium text-[var(--color-on-surface-muted)] uppercase tracking-wide">Today's Mood</span>
             </div>
             {todayMood !== null ? (
-              <div className="text-2xl font-bold text-[var(--color-on-surface)]">{moodLabels[todayMood]}</div>
+              <div className="flex items-center gap-2">
+                <div className="text-2xl font-bold text-[var(--color-on-surface)]">{moodLabels[todayMood]}</div>
+                <div className="w-3 h-3 rounded-full" style={{ background: moodColors[todayMood] }} aria-hidden="true" />
+              </div>
             ) : (
-              <Link to="/mood" className="text-sm text-[var(--color-secondary)] hover:underline">Check in →</Link>
+              <Link to="/mood" className="text-sm text-[var(--color-primary)] hover:underline flex items-center gap-1">
+                Check in <ArrowRight size={14} />
+              </Link>
             )}
           </div>
 
-          <div className="bg-[var(--color-surface)] rounded-2xl p-5 border border-[var(--color-border)]">
-            <div className="flex items-center gap-2 mb-2">
-              <TrendingUp size={16} className="text-[var(--color-primary)]" aria-hidden="true" />
+          {/* Streak */}
+          <div className="card p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded-lg bg-[var(--color-primary)]/15 flex items-center justify-center">
+                <TrendingUp size={16} className="text-[var(--color-primary)]" aria-hidden="true" />
+              </div>
               <span className="text-xs font-medium text-[var(--color-on-surface-muted)] uppercase tracking-wide">Streak</span>
             </div>
             <div className="text-3xl font-bold text-[var(--color-on-surface)]">{streak} <span className="text-sm font-normal text-[var(--color-on-surface-muted)]">days</span></div>
           </div>
 
-          <div className="bg-[var(--color-surface)] rounded-2xl p-5 border border-[var(--color-border)]">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles size={16} className="text-[var(--color-primary)]" aria-hidden="true" />
+          {/* Suggested */}
+          <div className="card p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded-lg bg-[var(--color-primary)]/15 flex items-center justify-center">
+                <Sparkles size={16} className="text-[var(--color-primary)]" aria-hidden="true" />
+              </div>
               <span className="text-xs font-medium text-[var(--color-on-surface-muted)] uppercase tracking-wide">Suggested</span>
             </div>
-            <Link to="/exercises" className="text-sm text-[var(--color-primary-dark)] font-medium hover:underline">{todayExercise.name} →</Link>
+            <Link to="/exercises" className="text-sm text-[var(--color-primary)] font-medium hover:underline flex items-center gap-1">
+              {todayExercise.name} <ArrowRight size={14} />
+            </Link>
           </div>
         </div>
 
-        {/* Quick actions */}
-        <h2 className="text-sm font-semibold text-[var(--color-on-surface-muted)] uppercase tracking-wide mb-3">Quick Actions</h2>
-        <div className="grid md:grid-cols-2 gap-4 mb-8">
+        {/* Primary action — Start a conversation */}
+        <div className="grid md:grid-cols-3 gap-4 mb-6">
           <Link
             to="/chat"
-            className="bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] rounded-2xl p-6 text-white hover:scale-[1.01] transition-transform min-h-[44px]"
+            className="md:col-span-2 card card-hover p-6 relative overflow-hidden group min-h-[44px]"
           >
-            <MessageCircle size={24} className="mb-3" aria-hidden="true" />
-            <h3 className="font-semibold text-lg mb-1">Start a conversation</h3>
-            <p className="text-sm text-white/80">Talk through what&apos;s on your mind with AI support</p>
+            <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary-dark)]/20 to-transparent opacity-50 group-hover:opacity-70 transition-opacity" aria-hidden="true" />
+            <div className="relative">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--color-primary-dark)] to-[var(--color-primary-light)] flex items-center justify-center mb-4 glow-sunset">
+                <MessageCircle size={24} className="text-white" aria-hidden="true" />
+              </div>
+              <h3 className="font-semibold text-xl text-[var(--color-on-surface)] mb-1.5">Start a conversation</h3>
+              <p className="text-sm text-[var(--color-on-surface-muted)]">Talk through what's on your mind with AI support</p>
+            </div>
           </Link>
+
           <Link
             to="/journal"
-            className="bg-[var(--color-surface)] rounded-2xl p-6 border border-[var(--color-border)] hover:border-[var(--color-primary)]/40 transition-colors min-h-[44px]"
+            className="card card-hover p-6 group min-h-[44px]"
           >
-            <BookOpen size={24} className="mb-3 text-[var(--color-secondary)]" aria-hidden="true" />
-            <h3 className="font-semibold text-lg mb-1 text-[var(--color-on-surface)]">Write in journal</h3>
+            <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-hover)] flex items-center justify-center mb-4">
+              <BookOpen size={24} className="text-[var(--color-secondary)]" aria-hidden="true" />
+            </div>
+            <h3 className="font-semibold text-lg text-[var(--color-on-surface)] mb-1.5">Write in journal</h3>
             <p className="text-sm text-[var(--color-on-surface-muted)]">Reflect and get an AI reflection on your entry</p>
           </Link>
         </div>
 
-        {/* Mood trend mini chart */}
-        {recentMoods.length > 0 && (
-          <div className="bg-[var(--color-surface)] rounded-2xl p-5 border border-[var(--color-border)] mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold text-[var(--color-on-surface-muted)] uppercase tracking-wide">Recent Mood Trend</h2>
-              <Link to="/mood" className="text-xs text-[var(--color-secondary)] hover:underline">View all →</Link>
+        {/* Mood trend + Exercise suggestion */}
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* Mood trend mini chart */}
+          {recentMoods.length > 0 && (
+            <div className="card p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xs font-semibold text-[var(--color-on-surface-muted)] uppercase tracking-wide">Recent Mood Trend</h2>
+                <Link to="/mood" className="text-xs text-[var(--color-primary)] hover:underline">View all →</Link>
+              </div>
+              <div className="flex items-end justify-between gap-2 h-24" role="img" aria-label={`Mood trend for last ${recentMoods.length} days: ${recentMoods.map(m => moodLabels[m.mood]).join(', ')}`}>
+                {recentMoods.map((m, i) => (
+                  <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                    <div
+                      className="w-full rounded-t-lg"
+                      style={{ height: `${(m.mood / 4) * 100}%`, background: `linear-gradient(to top, ${moodColors[m.mood]}40, ${moodColors[m.mood]})` }}
+                    />
+                    <span className="text-xs text-[var(--color-on-surface-muted)]">{moodLabels[m.mood].slice(0, 1)}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            {/* Accessible chart with text alternative */}
-            <div className="flex items-end justify-between gap-2 h-24" role="img" aria-label={`Mood trend for last ${recentMoods.length} days: ${recentMoods.map(m => moodLabels[m.mood]).join(', ')}`}>
-              {recentMoods.map((m, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                  <div
-                    className="w-full rounded-t-lg bg-gradient-to-t from-[var(--color-primary)]/40 to-[var(--color-primary)]"
-                    style={{ height: `${(m.mood / 4) * 100}%` }}
-                  />
-                  <span className="text-xs text-[var(--color-on-surface-muted)]">{moodLabels[m.mood].slice(0, 1)}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+          )}
 
-        {/* Exercise suggestion */}
-        <div className="bg-gradient-to-br from-[var(--color-secondary)]/15 to-[var(--color-primary)]/12 rounded-2xl p-5 border border-[var(--color-secondary)]/25">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-[var(--color-primary)]/15 flex items-center justify-center">
-              <todayExercise.icon size={20} className="text-[var(--color-primary-dark)]" aria-hidden="true" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-[var(--color-on-surface)]">{todayExercise.name}</h3>
-              <p className="text-sm text-[var(--color-on-surface-muted)]">{todayExercise.desc}</p>
+          {/* Exercise suggestion */}
+          <div className="card p-5 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/8 to-transparent" aria-hidden="true" />
+            <div className="relative">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-[var(--color-primary)]/15 flex items-center justify-center">
+                  <todayExercise.icon size={20} className="text-[var(--color-primary)]" aria-hidden="true" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-[var(--color-on-surface)]">{todayExercise.name}</h3>
+                  <p className="text-sm text-[var(--color-on-surface-muted)]">{todayExercise.desc}</p>
+                </div>
+              </div>
+              <Link to="/exercises" className="inline-flex items-center gap-1 mt-2 text-sm font-medium text-[var(--color-primary)] hover:underline min-h-[44px]">
+                Try this exercise <ArrowRight size={14} />
+              </Link>
             </div>
           </div>
-          <Link to="/exercises" className="inline-flex items-center gap-1 mt-2 text-sm font-medium text-[var(--color-primary-dark)] hover:underline min-h-[44px]">
-            Try this exercise →
-          </Link>
         </div>
       </div>
     </div>
