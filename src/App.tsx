@@ -39,6 +39,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
+      <a href="#main-content" className="skip-link">Skip to main content</a>
+
       {/* Sidebar */}
       <aside className="md:w-64 md:min-h-screen md:fixed md:left-0 md:top-0 bg-[var(--color-background-dark)] border-r border-[var(--color-border)] flex md:flex-col items-center md:items-start px-4 md:px-5 py-4 md:py-8 gap-2 md:gap-1 overflow-x-auto md:overflow-x-visible z-40">
         <div className="hidden md:flex items-center gap-2.5 mb-8 px-2">
@@ -51,24 +53,26 @@ export default function App() {
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--color-primary-dark)] to-[var(--color-primary-light)]" aria-hidden="true" />
           <span className="font-bold text-[var(--color-on-surface)]">Mindspace</span>
         </div>
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.to === '/'}
-            aria-label={item.label}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap min-h-[44px] ${
-                isActive
-                  ? 'bg-[var(--color-primary)]/15 text-[var(--color-primary)]'
-                  : 'text-[var(--color-on-surface-muted)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-on-surface)]'
-              }`
-            }
-          >
-            <item.icon size={18} aria-hidden="true" />
-            <span className="hidden md:inline">{item.label}</span>
-          </NavLink>
-        ))}
+        <nav aria-label="Primary" className="contents">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === '/'}
+              aria-label={item.label}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all whitespace-nowrap min-h-[44px] ${
+                  isActive
+                    ? 'bg-[var(--color-primary)]/15 text-[var(--color-primary)] font-semibold shadow-[inset_3px_0_0_0_var(--color-primary)]'
+                    : 'font-medium text-[var(--color-on-surface-muted)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-on-surface)]'
+                }`
+              }
+            >
+              <item.icon size={18} aria-hidden="true" />
+              <span className="hidden md:inline">{item.label}</span>
+            </NavLink>
+          ))}
+        </nav>
         <button
           onClick={() => setShowCrisis(true)}
           aria-label="Get crisis help"
@@ -80,7 +84,7 @@ export default function App() {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 md:ml-64 min-h-screen">
+      <main id="main-content" className="flex-1 md:ml-64 min-h-screen">
         {/* Mobile crisis button */}
         <button
           onClick={() => setShowCrisis(true)}
@@ -93,9 +97,9 @@ export default function App() {
       </main>
 
       {/* Persistent disclaimer bar */}
-      <div className="fixed bottom-0 left-0 right-0 md:left-64 bg-[var(--color-surface)] border-t border-[var(--color-border)] px-4 py-1.5 text-center text-[10px] text-[var(--color-on-surface-muted)] z-30" role="alert">
+      <footer className="fixed bottom-0 left-0 right-0 md:left-64 bg-[var(--color-surface)] border-t border-[var(--color-border)] px-4 py-1.5 text-center text-[10px] text-[var(--color-on-surface-muted)] z-30">
         Mindspace is not a replacement for professional therapy. If you're in crisis, call 988 (US) or your local emergency number.
-      </div>
+      </footer>
 
       {showCrisis && <CrisisAlert onClose={() => setShowCrisis(false)} />}
     </div>
