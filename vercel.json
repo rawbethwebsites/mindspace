@@ -1,11 +1,5 @@
 {
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
-  ],
-  "env": {
-    "CONVEX_DEPLOYMENT": {
-      "value": "https://honorable-goose-849.convex.cloud",
-      "vercel": { "env": "auto" }
-    }
-  }
+  ]
 }
