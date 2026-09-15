@@ -20,7 +20,7 @@ export const listChats = query({
 
 export const createChat = mutation({
   args: { 
-    userId: v.optional(v.id("users")),
+    userId: v.id("users"),
     title: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -99,9 +99,8 @@ export const addMessage = mutation({
 // ============ JOURNALS ============
 
 export const listJournals = query({
-  args: { userId: v.optional(v.id("users")) },
+  args: { userId: v.id("users") },
   handler: async (ctx, args) => {
-    if (!args.userId) return [];
     return await ctx.db
       .query("journals")
       .withIndex("by_user_created", (q) => q.eq("userId", args.userId))
@@ -112,7 +111,7 @@ export const listJournals = query({
 
 export const createJournal = mutation({
   args: {
-    userId: v.optional(v.id("users")),
+    userId: v.id("users"),
     content: v.string(),
     mood: v.optional(v.number()),
   },
@@ -120,7 +119,7 @@ export const createJournal = mutation({
     const journalId = await ctx.db.insert("journals", {
       userId: args.userId,
       content: args.content,
-      mood: args.mood,
+      mood: args.mood || undefined,
       reflection: undefined,
       createdAt: Date.now(),
     });
@@ -145,9 +144,8 @@ export const deleteJournal = mutation({
 // ============ MOODS ============
 
 export const listMoods = query({
-  args: { userId: v.optional(v.id("users")) },
+  args: { userId: v.id("users") },
   handler: async (ctx, args) => {
-    if (!args.userId) return [];
     return await ctx.db
       .query("moods")
       .withIndex("by_user_created", (q) => q.eq("userId", args.userId))
@@ -158,7 +156,7 @@ export const listMoods = query({
 
 export const logMood = mutation({
   args: {
-    userId: v.optional(v.id("users")),
+    userId: v.id("users"),
     level: v.number(),
     notes: v.optional(v.string()),
   },
@@ -175,9 +173,8 @@ export const logMood = mutation({
 // ============ EXERCISES ============
 
 export const listExercises = query({
-  args: { userId: v.optional(v.id("users")) },
+  args: { userId: v.id("users") },
   handler: async (ctx, args) => {
-    if (!args.userId) return [];
     return await ctx.db
       .query("exercises")
       .withIndex("by_user_completed", (q) => q.eq("userId", args.userId))
@@ -188,7 +185,7 @@ export const listExercises = query({
 
 export const completeExercise = mutation({
   args: {
-    userId: v.optional(v.id("users")),
+    userId: v.id("users"),
     exerciseType: v.string(),
     duration: v.optional(v.number()),
   },

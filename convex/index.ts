@@ -1,7 +1,7 @@
 import { convexAuth } from "@convex-dev/auth/server";
 import { Password } from "@convex-dev/auth/providers/Password";
 
-export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
+export const auth = convexAuth({
   providers: [
     Password({
       profile(params) {
@@ -29,3 +29,5 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
     }),
   ],
 });
+
+export default auth;

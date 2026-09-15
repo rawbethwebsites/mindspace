@@ -8,6 +8,8 @@
  * @module
  */
 
+import type * as auth from "../auth.js";
+import type * as index from "../index.js";
 import type * as mindspace from "../mindspace.js";
 
 import type {
@@ -17,6 +19,8 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  auth: typeof auth;
+  index: typeof index;
   mindspace: typeof mindspace;
 }>;
 
