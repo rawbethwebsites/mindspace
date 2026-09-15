@@ -1,42 +1,18 @@
-import { query, mutation } from "./_generated/server";
-import { v } from "convex/values";
+import { convexAuth } from "@convex-dev/auth/server";
+import { Password } from "@convex-dev/auth/providers/Password";
 
-// Get current user
-export const getCurrentUser = query({
-  args: {},
-  handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_email", (q) => q.eq("email", identity.email as string))
-      .unique();
-
-    return user;
-  },
+export const auth = convexAuth({
+  providers: [
+    Password({
+      profile: (params) => {
+        const email = String(params.email ?? "").trim().toLowerCase();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          throw new Error("Enter a valid email address");
+        }
+        return { email };
+      },
+    }),
+  ],
 });
 
-// Create user after signup
-export const createUser = mutation({
-  args: {
-    email: v.string(),
-    name: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const existing = await ctx.db
-      .query("users")
-      .withIndex("by_email", (q) => q.eq("email", args.email))
-      .unique();
-
-    if (existing) {
-      throw new Error("User already exists");
-    }
-
-    await ctx.db.insert("users", {
-      email: args.email,
-      name: args.name,
-      createdAt: Date.now(),
-    });
-  },
-});
+export default auth;
