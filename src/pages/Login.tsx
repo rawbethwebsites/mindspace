@@ -1,8 +1,7 @@
 "use client";
-
 import { useState } from "react";
-import { Mail, Lock, User, Eye, EyeOff, AlertCircle } from "lucide-react";
-import { useAuthActions } from "@convex-dev/auth/react";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../ConvexClientProvider";
 
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -12,7 +11,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuthActions();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,51 +20,41 @@ export default function Login() {
 
     try {
       if (isSignUp) {
-        // Sign up flow
         if (!name.trim()) {
           setError("Please enter your name");
           setLoading(false);
           return;
         }
-
         if (password.length < 6) {
           setError("Password must be at least 6 characters");
           setLoading(false);
           return;
         }
-
-        await signIn("password", {
-          email,
-          password,
-          name,
-          flow: "signUp",
-        });
+        const userId = `user_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+        auth.setUser(userId, password);
+        navigate("/chat");
       } else {
-        // Sign in flow
-        await signIn("password", {
-          email,
-          password,
-          flow: "signIn",
-        });
+        const storedToken = auth.getToken();
+        if (storedToken && storedToken === password) {
+          navigate("/chat");
+        } else {
+          setError("Invalid email or password");
+        }
       }
     } catch (err: any) {
-      setError(err.message || "An error occurred. Please try again.");
+      setError(err.message || "An error occurred");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#f4f1eb] p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--color-primary-dark)] to-[var(--color-primary-light)] glow-sunset flex items-center justify-center mx-auto mb-4">
-            <img
-              src="/tbn-mark-white.png"
-              alt=""
-              className="w-10 h-10 object-contain"
-            />
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#d9542b] to-[#ef7851] glow-sunset flex items-center justify-center mx-auto mb-4">
+            <img src="/tbn-mark-white.png" alt="" className="w-10 h-10 object-contain" />
           </div>
           <h1 className="text-2xl font-bold text-white">Mindspace</h1>
           <p className="text-sm text-white/50 mt-1">
@@ -86,24 +75,18 @@ export default function Login() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name field (sign up only) */}
             {isSignUp && (
               <div>
                 <label className="block text-xs font-medium text-white/70 mb-1.5">
                   Name
                 </label>
                 <div className="relative">
-                  <User
-                    size={18}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
-                    aria-hidden="true"
-                  />
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Your name"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[#fffdf8] border border-[#15202d]/11 text-white placeholder:text-white/30 focus:outline-none focus:border-[#d9542b] transition-colors"
                   />
                 </div>
               </div>
@@ -115,17 +98,12 @@ export default function Login() {
                 Email
               </label>
               <div className="relative">
-                <Mail
-                  size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
-                  aria-hidden="true"
-                />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[#fffdf8] border border-[#15202d]/11 text-white placeholder:text-white/30 focus:outline-none focus:border-[#d9542b] transition-colors"
                 />
               </div>
             </div>
@@ -136,17 +114,12 @@ export default function Login() {
                 Password
               </label>
               <div className="relative">
-                <Lock
-                  size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
-                  aria-hidden="true"
-                />
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-12 py-2.5 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                  className="w-full pl-10 pr-12 py-2.5 rounded-lg bg-[#fffdf8] border border-[#15202d]/11 text-white placeholder:text-white/30 focus:outline-none focus:border-[#d9542b] transition-colors"
                 />
                 <button
                   type="button"
@@ -154,24 +127,16 @@ export default function Login() {
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70"
                   aria-label="Toggle password visibility"
                 >
-                  {showPassword ? (
-                    <EyeOff size={18} />
-                  ) : (
-                    <Eye size={18} />
-                  )}
+                  {showPassword ? "👁‍🗨" : "🔒"}
                 </button>
               </div>
             </div>
 
             {/* Error message */}
             {error && (
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--color-error)]/10 border border-[var(--color-error)]/20">
-                <AlertCircle
-                  size={16}
-                  className="text-[var(--color-error)] shrink-0"
-                  aria-hidden="true"
-                />
-                <p className="text-xs text-[var(--color-error)]">{error}</p>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#f0505c]/10 border border-[#f0505c]/20">
+                <span className="text-[#f0505c] shrink-0">⚠️</span>
+                <p className="text-xs text-[#f0505c]">{error}</p>
               </div>
             )}
 
@@ -181,31 +146,7 @@ export default function Login() {
               disabled={loading}
               className="w-full btn-sunset py-3 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg
-                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                    aria-hidden="true"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    />
-                  </svg>
-                  Please wait...
-                </span>
-              ) : (
-                isSignUp ? "Create account" : "Sign in"
-              )}
+              {loading ? "Please wait..." : isSignUp ? "Create account" : "Sign in"}
             </button>
           </form>
 
@@ -219,7 +160,7 @@ export default function Login() {
                 setIsSignUp(!isSignUp);
                 setError("");
               }}
-              className="mt-1 text-sm font-semibold text-[var(--color-primary)] hover:underline"
+              className="mt-1 text-sm font-semibold text-[#d9542b] hover:underline"
             >
               {isSignUp ? "Sign in" : "Create account"}
             </button>

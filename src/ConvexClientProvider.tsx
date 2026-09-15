@@ -1,16 +1,26 @@
+"use client";
 import { ConvexProvider, ConvexReactClient } from "convex/react";
-import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import type { ReactNode } from "react";
 
-// This URL is injected at deploy time by Vercel.
-// For local dev, start with: CONVEX_DEPLOYMENT=https://honorable-goose-849.convex.cloud npm run dev
-const convexUrl = "https://honorable-goose-849.convex.cloud";
-const convex = new ConvexReactClient(convexUrl);
+const convex = new ConvexReactClient("https://honorable-goose-849.convex.cloud");
 
 export function ConvexClientProvider({ children }: { children: ReactNode }) {
-  return (
-    <ConvexAuthProvider client={convex}>
-      <ConvexProvider client={convex}>{children}</ConvexProvider>
-    </ConvexAuthProvider>
-  );
+  return <ConvexProvider client={convex}>{children}</ConvexProvider>;
 }
+
+export const auth = {
+  getUserId(): string | null {
+    return localStorage.getItem("mindspace_userId");
+  },
+  getToken(): string | null {
+    return localStorage.getItem("mindspace_token");
+  },
+  setUser(userId: string, token: string) {
+    localStorage.setItem("mindspace_userId", userId);
+    localStorage.setItem("mindspace_token", token);
+  },
+  clear() {
+    localStorage.removeItem("mindspace_userId");
+    localStorage.removeItem("mindspace_token");
+  },
+};

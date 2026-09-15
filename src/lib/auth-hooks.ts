@@ -1,17 +1,18 @@
-import { useAuthActions } from "@convex-dev/auth/react";
+"use client";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../ConvexClientProvider";
 
 export function useAuth() {
-  const { signIn, signOut } = useAuthActions();
   const navigate = useNavigate();
 
-  const logout = async () => {
-    await signOut();
+  const userId = auth.getUserId();
+  const isAuthenticated = !!userId;
+  const loading = false;
+
+  const logout = () => {
+    auth.clear();
     navigate("/login");
   };
 
-  return {
-    signIn,
-    signOut: logout,
-  };
+  return { userId, isAuthenticated, loading, logout };
 }
