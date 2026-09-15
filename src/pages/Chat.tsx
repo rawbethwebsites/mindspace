@@ -16,6 +16,9 @@ export default function Chat() {
   const abortRef = useRef<AbortController | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+  // Convex hooks (ready for when we enable auth)
+  // const { chats, createChat, addMessage } = useChatCloud()
+
   useEffect(() => {
     loadConversations()
   }, [])

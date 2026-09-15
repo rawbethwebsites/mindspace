@@ -121,7 +121,7 @@ export const createJournal = mutation({
       userId: args.userId,
       content: args.content,
       mood: args.mood,
-      reflection: null,
+      reflection: undefined,
       createdAt: Date.now(),
     });
     return journalId;
