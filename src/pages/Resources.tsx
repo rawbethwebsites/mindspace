@@ -81,7 +81,7 @@ function SectionHeader({ icon: Icon, tone, headingId, title, subtitle }: {
   return (
     <div className="flex items-center gap-3 mb-5">
       <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+        className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
         style={{ background: t.bg, border: `1px solid ${t.border}` }}
       >
         <Icon size={18} style={{ color: t.icon }} aria-hidden="true" />
@@ -192,19 +192,18 @@ export default function Resources() {
   })
 
   return (
-    <div className="min-h-screen pb-16 px-5 md:px-8 pt-8 glow-bg">
+    <div className="app-page glow-bg">
       <div className="max-w-6xl mx-auto">
 
-        {/* ═══ Hero ═══ */}
         <header className="mb-10 md:mb-14 fade-in">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--accent-1)] to-[var(--accent-3)] flex items-center justify-center glow-soft" aria-hidden="true">
+            <div className="icon-tile w-8 h-8 glow-soft" aria-hidden="true">
               <Shield size={16} className="text-white" />
             </div>
-            <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Support Hub</span>
+            <span className="page-kicker">Support Hub</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-[var(--text)] tracking-tight mb-2">Resources</h1>
-          <p className="text-base text-[var(--text-muted)] max-w-2xl leading-relaxed">
+          <h1 className="page-title mb-2">Resources</h1>
+          <p className="page-subtitle leading-relaxed">
             Crisis support, professional guidance, and therapy resources — all in one place.
           </p>
           <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm text-[var(--text-subtle)]">
@@ -248,7 +247,7 @@ export default function Resources() {
                 <a
                   key={e.num}
                   href={`tel:${e.num}`}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold min-h-[44px] rounded-xl border transition-colors hover:bg-[rgba(240,80,92,0.1)]"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold min-h-[44px] rounded-lg border transition-colors hover:bg-[rgba(240,80,92,0.1)]"
                   style={{ borderColor: 'rgba(240,80,92,0.3)', color: 'var(--color-error)' }}
                   aria-label={`Call emergency services in ${e.region} at ${e.num}`}
                 >

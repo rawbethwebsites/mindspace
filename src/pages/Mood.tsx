@@ -50,12 +50,13 @@ export default function Mood() {
   })()
 
   return (
-    <div className="min-h-screen pb-12 px-6 md:px-10 pt-8">
+    <div className="app-page glow-bg">
       <div className="max-w-3xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[var(--color-on-surface)] mb-2">How are you feeling?</h1>
-          <p className="text-sm text-[var(--color-on-surface-muted)]">Take a moment to check in with yourself. No judgment, just honesty.</p>
-        </div>
+        <header className="mb-8">
+          <p className="page-kicker mb-2">Daily check-in</p>
+          <h1 className="page-title mb-2">How are you feeling?</h1>
+          <p className="page-subtitle">Take a moment to name what is here. No judgment, just honesty.</p>
+        </header>
 
         {/* Mood picker */}
         <div className="card p-6 mb-6">
@@ -66,7 +67,7 @@ export default function Mood() {
                 onClick={() => setSelected(i)}
                 aria-label={`Mood: ${moodLabels[i]}`}
                 aria-pressed={selected === i}
-                className={`flex-1 flex flex-col items-center gap-2 py-4 rounded-xl transition-all min-h-[44px] ${
+                  className={`flex-1 flex flex-col items-center gap-2 py-4 rounded-lg transition-all min-h-[44px] ${
                   selected === i
                     ? 'bg-[var(--color-primary)]/15 scale-105'
                     : 'hover:bg-[var(--color-surface-hover)]'
@@ -90,14 +91,14 @@ export default function Mood() {
             onChange={(e) => setNote(e.target.value)}
             placeholder="Write a note about how you're feeling..."
             rows={3}
-            className="w-full px-4 py-3 rounded-xl bg-[var(--color-background)] border border-[var(--color-border)] text-sm text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-subtle)] focus:outline-none focus:border-[var(--color-primary)] transition-colors resize-none mb-4"
+            className="w-full px-4 py-3 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-sm text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-subtle)] focus:outline-none focus:border-[var(--color-primary)] transition-colors resize-none mb-4"
           />
 
           <button
             onClick={handleSave}
             disabled={selected === null}
             aria-label={todaySet ? 'Update mood check-in' : 'Save mood check-in'}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed min-h-[44px]"
+            className="btn-sunset w-full py-3 disabled:opacity-40 disabled:cursor-not-allowed min-h-[44px]"
           >
             {saved ? '✓ Saved' : todaySet ? 'Update check-in' : 'Save check-in'}
           </button>
@@ -105,7 +106,7 @@ export default function Mood() {
 
         {/* Streak */}
         <div className="flex items-center gap-3 mb-6 p-4 card">
-          <div className="w-10 h-10 rounded-xl bg-[var(--color-primary)]/15 flex items-center justify-center">
+          <div className="icon-tile w-10 h-10">
             <TrendingUp size={20} className="text-[var(--color-primary)]" aria-hidden="true" />
           </div>
           <span className="text-sm font-medium text-[var(--color-on-surface)]">
@@ -116,7 +117,7 @@ export default function Mood() {
         {/* History */}
         {moods.length > 0 && (
           <div className="card p-6">
-            <h2 className="text-xs font-semibold text-[var(--color-on-surface-muted)] uppercase tracking-wide mb-4">Mood History</h2>
+            <h2 className="panel-label mb-4">Mood History</h2>
 
             {/* Chart */}
             <div

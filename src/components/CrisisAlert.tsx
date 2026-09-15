@@ -22,7 +22,7 @@ export default function CrisisAlert({ onClose }: { onClose: () => void }) {
 
         <div className="space-y-3">
           {crisisResources.map((r) => (
-            <div key={r.name} className="border border-[var(--color-border)] rounded-xl p-4 hover:border-[var(--color-primary)]/30 transition-colors">
+            <div key={r.name} className="border border-[var(--color-border)] rounded-lg p-4 hover:border-[var(--color-primary)]/30 transition-colors">
               <h3 className="font-semibold text-[var(--color-on-surface)] mb-1">{r.name}</h3>
               <p className="text-sm text-[var(--color-on-surface-muted)] mb-2">{r.description}</p>
               <div className="flex flex-wrap gap-3 text-sm">
@@ -46,7 +46,7 @@ export default function CrisisAlert({ onClose }: { onClose: () => void }) {
           ))}
         </div>
 
-        <div className="mt-4 p-4 bg-[var(--color-error)]/10 rounded-xl">
+        <div className="mt-4 p-4 bg-[var(--color-error)]/10 rounded-lg">
           <p className="text-sm text-[var(--color-error)]">
             If you're in immediate danger, call your local emergency number (911 in the US, 999 in the UK, 112 in Europe).
           </p>
@@ -54,7 +54,7 @@ export default function CrisisAlert({ onClose }: { onClose: () => void }) {
 
         <button
           onClick={onClose}
-          className="mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] text-white font-medium hover:opacity-90 transition-opacity"
+          className="btn-sunset mt-4 w-full py-3"
         >
           I understand
         </button>

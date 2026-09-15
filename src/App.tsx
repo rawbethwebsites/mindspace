@@ -38,22 +38,20 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen flex flex-col md:flex-row bg-[var(--bg)] text-[var(--text)]">
       <a href="#main-content" className="skip-link">Skip to main content</a>
 
-      {/* Sidebar */}
-      <aside className="md:w-64 md:min-h-screen md:fixed md:left-0 md:top-0 bg-[var(--color-background-dark)] border-r border-[var(--color-border)] flex md:flex-col items-center md:items-start px-4 md:px-5 py-4 md:py-8 gap-2 md:gap-1 overflow-x-auto md:overflow-x-visible z-40">
-        <div className="hidden md:flex items-center gap-2.5 mb-8 px-2">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[var(--color-primary-dark)] to-[var(--color-primary-light)] glow-sunset flex items-center justify-center" aria-hidden="true">
-            <span className="text-white font-bold text-sm">M</span>
+      <aside className="fixed bottom-0 left-0 right-0 md:bottom-auto md:right-auto md:w-64 md:min-h-screen md:top-0 bg-[rgba(17,25,35,0.96)] backdrop-blur-xl border-t md:border-t-0 md:border-r border-white/10 flex md:flex-col items-center md:items-stretch px-2 md:px-4 py-2 md:py-5 gap-1 md:gap-2 z-50">
+        <div className="hidden md:flex items-center gap-3 mb-7 px-2 py-1">
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[var(--color-primary-dark)] to-[var(--color-primary-light)] glow-sunset flex items-center justify-center p-1.5" aria-hidden="true">
+            <img src="/tbn-mark-white.png" alt="" className="w-full h-full object-contain" />
           </div>
-          <span className="text-lg font-bold tracking-tight text-[var(--color-on-surface)]">Mindspace</span>
+          <div>
+            <span className="block text-lg font-bold tracking-tight text-white">Mindspace</span>
+            <span className="block text-xs text-white/50">Private mental wellness</span>
+          </div>
         </div>
-        <div className="flex md:hidden items-center gap-2 mr-auto">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--color-primary-dark)] to-[var(--color-primary-light)]" aria-hidden="true" />
-          <span className="font-bold text-[var(--color-on-surface)]">Mindspace</span>
-        </div>
-        <nav aria-label="Primary" className="contents">
+        <nav aria-label="Primary" className="flex w-full items-center justify-around md:flex-col md:items-stretch md:justify-start">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
@@ -61,43 +59,40 @@ export default function App() {
               end={item.to === '/'}
               aria-label={item.label}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all whitespace-nowrap min-h-[44px] ${
+                `flex min-w-0 flex-1 flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 px-1 md:px-3 py-1.5 md:py-2.5 rounded-xl text-[10px] md:text-sm transition-all min-h-[50px] md:min-h-[44px] md:w-full ${
                   isActive
-                    ? 'bg-[var(--color-primary)]/15 text-[var(--color-primary)] font-semibold shadow-[inset_3px_0_0_0_var(--color-primary)]'
-                    : 'font-medium text-[var(--color-on-surface-muted)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-on-surface)]'
+                    ? 'bg-white/10 text-[#f5c56a] font-semibold md:shadow-[inset_3px_0_0_0_#f5c56a]'
+                    : 'font-medium text-white/55 hover:bg-white/8 hover:text-white'
                 }`
               }
             >
               <item.icon size={18} aria-hidden="true" />
-              <span className="hidden md:inline">{item.label}</span>
+              <span>{item.label}</span>
             </NavLink>
           ))}
         </nav>
         <button
           onClick={() => setShowCrisis(true)}
           aria-label="Get crisis help"
-          className="mt-auto hidden md:flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[var(--color-error)] hover:bg-[var(--color-error-light)] transition-all min-h-[44px]"
+          className="mt-auto hidden md:flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-[var(--color-error)] border border-[rgba(240,80,92,0.22)] bg-[rgba(240,80,92,0.055)] hover:bg-[var(--color-error-light)] transition-all min-h-[44px]"
         >
           <AlertTriangle size={18} aria-hidden="true" />
           <span>Crisis Help</span>
         </button>
       </aside>
 
-      {/* Main content */}
       <main id="main-content" className="flex-1 md:ml-64 min-h-screen">
-        {/* Mobile crisis button */}
         <button
           onClick={() => setShowCrisis(true)}
           aria-label="Get crisis help"
-          className="md:hidden fixed bottom-16 right-4 z-40 w-12 h-12 rounded-full bg-[var(--color-error)] text-white shadow-lg flex items-center justify-center"
+          className="md:hidden fixed bottom-[9rem] right-4 z-40 w-11 h-11 rounded-full bg-[var(--color-error)] text-white shadow-lg flex items-center justify-center"
         >
           <AlertTriangle size={20} aria-hidden="true" />
         </button>
         <Outlet />
       </main>
 
-      {/* Persistent disclaimer bar */}
-      <footer className="fixed bottom-0 left-0 right-0 md:left-64 bg-[var(--color-surface)] border-t border-[var(--color-border)] px-4 py-1.5 text-center text-[10px] text-[var(--color-on-surface-muted)] z-30">
+      <footer className="hidden md:block fixed bottom-0 left-64 right-0 bg-[rgba(244,241,235,0.9)] backdrop-blur-xl border-t border-[var(--color-border)] px-4 py-2 text-center text-[10px] text-[var(--color-on-surface-muted)] z-30">
         Mindspace is not a replacement for professional therapy. If you're in crisis, call 988 (US) or your local emergency number.
       </footer>
 

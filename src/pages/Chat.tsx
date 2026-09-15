@@ -135,13 +135,13 @@ export default function Chat() {
   }
 
   return (
-    <div className="flex h-screen pb-7">
+    <div className="flex h-screen pb-[4.4rem] md:pb-8 bg-[var(--bg)]">
       {/* Conversation list */}
-      <div className={`w-64 border-r border-[var(--color-border)] bg-[var(--color-background-dark)] flex-col ${showConvList ? 'flex' : 'hidden'} md:flex`}>
+      <div className={`absolute inset-y-0 left-0 z-30 w-72 border-r border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl flex-col md:static md:shadow-none ${showConvList ? 'flex' : 'hidden'} md:flex`}>
         <button
           onClick={newConversation}
           aria-label="Start new conversation"
-          className="m-3 flex items-center gap-2 px-3 py-2.5 rounded-xl bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] text-white text-sm font-medium hover:opacity-90 transition-opacity min-h-[44px]"
+          className="m-3 btn-sunset flex items-center justify-center gap-2 px-3 py-2.5 text-sm min-h-[44px]"
         >
           <Plus size={16} aria-hidden="true" /> New conversation
         </button>
@@ -150,7 +150,7 @@ export default function Chat() {
             <p className="text-xs text-[var(--color-on-surface-muted)] px-3 py-4 text-center">No conversations yet</p>
           )}
           {conversations.map(conv => (
-            <div key={conv.id} className={`group flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors min-h-[44px] ${activeId === conv.id ? 'bg-[var(--color-primary)]/15' : 'hover:bg-[var(--color-surface-hover)]'}`}>
+            <div key={conv.id} className={`group flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors min-h-[44px] ${activeId === conv.id ? 'bg-[var(--color-primary)]/14 text-[var(--color-primary)]' : 'hover:bg-[var(--color-surface-hover)]'}`}>
               <button onClick={() => loadConv(conv.id)} className="flex-1 flex items-center gap-2 text-left text-sm text-[var(--color-on-surface)] truncate" aria-label={`Open conversation: ${conv.title}`}>
                 <MessageCircle size={14} className="shrink-0 text-[var(--color-primary)]" aria-hidden="true" />
                 <span className="truncate">{conv.title}</span>
@@ -165,12 +165,13 @@ export default function Chat() {
 
       {/* Chat area */}
       <div className="flex-1 flex flex-col">
+        <h1 className="sr-only">Mindspace AI Chat</h1>
         {/* Header */}
-        <div className="border-b border-[var(--color-border)] px-4 py-3 flex items-center gap-3 bg-[var(--color-background-dark)]">
+        <div className="border-b border-[var(--color-border)] px-4 py-3 flex items-center gap-3 bg-[rgba(255,253,248,0.88)] backdrop-blur-xl">
           <button onClick={() => setShowConvList(!showConvList)} aria-label="Toggle conversation list" className="md:hidden text-[var(--color-on-surface-muted)] min-w-[44px] min-h-[44px] flex items-center justify-center">
             <MessageCircle size={20} aria-hidden="true" />
           </button>
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[var(--color-primary-dark)] to-[var(--color-primary-light)] flex items-center justify-center glow-sunset" aria-hidden="true">
+          <div className="w-9 h-9 rounded-xl bg-[var(--bg-deep)] flex items-center justify-center" aria-hidden="true">
             <MessageCircle size={16} className="text-white" />
           </div>
           <div>
@@ -193,10 +194,10 @@ export default function Chat() {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4 max-w-3xl mx-auto w-full">
+        <div className="flex-1 overflow-y-auto px-4 py-6 md:py-8 space-y-4 max-w-3xl mx-auto w-full">
           {messages.length === 0 && !streaming && (
             <div className="text-center py-16">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--color-primary-dark)] to-[var(--color-primary-light)] flex items-center justify-center mx-auto mb-4 glow-sunset" aria-hidden="true">
+              <div className="w-16 h-16 rounded-2xl bg-[var(--bg-deep)] flex items-center justify-center mx-auto mb-4 shadow-lg" aria-hidden="true">
                 <MessageCircle size={28} className="text-white" />
               </div>
               <h3 className="text-lg font-semibold text-[var(--color-on-surface)] mb-2">How are you feeling today?</h3>
@@ -207,7 +208,7 @@ export default function Chat() {
                     key={s}
                     onClick={() => setInput(s)}
                     aria-label={`Start with: ${s}`}
-                    className="px-3 py-2 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] text-xs text-[var(--color-on-surface-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors min-h-[44px]"
+                    className="px-3 py-2 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-xs text-[var(--color-on-surface-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors min-h-[44px]"
                   >
                     {s}
                   </button>
@@ -218,10 +219,10 @@ export default function Chat() {
 
           {messages.map((msg, i) => (
             <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} fade-in`}>
-              <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+              <div className={`max-w-[82%] px-4 py-2.5 rounded-lg text-sm leading-relaxed ${
                 msg.role === 'user'
-                  ? 'bg-gradient-to-br from-[var(--color-primary-dark)] to-[var(--color-primary)] text-white rounded-br-md'
-                  : 'bg-[var(--color-surface)] text-[var(--color-on-surface)] rounded-bl-md border border-[var(--color-border)]'
+                  ? 'bg-[var(--bg-deep)] text-white'
+                  : 'bg-[var(--color-surface)] text-[var(--color-on-surface)] border border-[var(--color-border)]'
               }`}>
                 {msg.content}
               </div>
@@ -231,7 +232,7 @@ export default function Chat() {
           {/* Streaming message with loading state */}
           {streaming && (
             <div className="flex justify-start fade-in">
-              <div className="max-w-[80%] px-4 py-2.5 rounded-2xl rounded-bl-md bg-[var(--color-surface)] border border-[var(--color-border)] text-sm leading-relaxed text-[var(--color-on-surface)]">
+              <div className="max-w-[82%] px-4 py-2.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-sm leading-relaxed text-[var(--color-on-surface)]">
                 {streamContent || (
                   <span className="flex items-center gap-2 text-[var(--color-on-surface-muted)]" role="status" aria-live="polite">
                     <Loader2 size={14} className="animate-spin" aria-hidden="true" /> Thinking...
@@ -246,7 +247,7 @@ export default function Chat() {
         </div>
 
         {/* Input */}
-        <div className="border-t border-[var(--color-border)] p-4 max-w-3xl mx-auto w-full bg-[var(--color-background-dark)]">
+        <div className="border-t border-[var(--color-border)] p-4 max-w-3xl mx-auto w-full bg-[rgba(244,241,235,0.9)] backdrop-blur-xl">
           {online === false && (
             <p className="text-xs text-[var(--color-on-surface-muted)] mb-2.5" role="status">
               Mindspace AI is offline right now — it runs on a personal device that isn't reachable at the moment. Please try again later.
@@ -265,14 +266,14 @@ export default function Chat() {
               placeholder={online === false ? 'AI is offline right now...' : "Share what's on your mind..."}
               rows={1}
               aria-label="Type your message"
-              className="flex-1 resize-none px-4 py-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-sm text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-subtle)] focus:outline-none focus:border-[var(--color-primary)] transition-colors max-h-32 disabled:opacity-60"
+              className="flex-1 resize-none px-4 py-3 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-sm text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-subtle)] focus:outline-none focus:border-[var(--color-primary)] transition-colors max-h-32 disabled:opacity-60"
               disabled={streaming || online === false}
             />
             <button
               onClick={handleSend}
               disabled={!input.trim() || streaming || online === false}
               aria-label="Send message"
-              className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--color-primary-dark)] to-[var(--color-primary)] text-white flex items-center justify-center hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+              className="w-12 h-12 rounded-xl bg-[var(--bg-deep)] text-white flex items-center justify-center hover:bg-[#263749] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
             >
               <Send size={16} aria-hidden="true" />
             </button>
