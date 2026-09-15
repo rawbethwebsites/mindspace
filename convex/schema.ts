@@ -2,19 +2,19 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-  // Users table (optional - for future auth)
+  // Users table - managed by Convex Auth
   users: defineTable({
-    email: v.optional(v.string()),
+    email: v.string(),
     name: v.optional(v.string()),
-    tokenIdentifier: v.optional(v.string()),
+    emailVerificationTime: v.optional(v.number()),
+    image: v.optional(v.string()),
     createdAt: v.number(),
   })
-    .index("by_token", ["tokenIdentifier"])
     .index("by_email", ["email"]),
 
   // Chat conversations
   chats: defineTable({
-    userId: v.optional(v.id("users")),
+    userId: v.id("users"),
     title: v.optional(v.string()),
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -33,7 +33,7 @@ export default defineSchema({
 
   // Journal entries
   journals: defineTable({
-    userId: v.optional(v.id("users")),
+    userId: v.id("users"),
     content: v.string(),
     reflection: v.optional(v.string()),
     mood: v.optional(v.number()),
@@ -44,7 +44,7 @@ export default defineSchema({
 
   // Mood logs
   moods: defineTable({
-    userId: v.optional(v.id("users")),
+    userId: v.id("users"),
     level: v.number(), // 1-5
     notes: v.optional(v.string()),
     createdAt: v.number(),
@@ -54,7 +54,7 @@ export default defineSchema({
 
   // Exercise completions
   exercises: defineTable({
-    userId: v.optional(v.id("users")),
+    userId: v.id("users"),
     exerciseType: v.string(), // "breathing", "grounding", "cbt", "body-scan"
     completedAt: v.number(),
     duration: v.optional(v.number()),
