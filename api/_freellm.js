@@ -1,5 +1,5 @@
 const DEFAULT_BASE_URL = 'http://localhost:3001/v1'
-const DEFAULT_MODEL = 'qwen3.5:397b-cloud'
+const DEFAULT_MODEL = 'auto'
 
 export function getFreeLlmConfig() {
   return {
