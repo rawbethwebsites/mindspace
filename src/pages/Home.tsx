@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { MessageCircle, BookOpen, Heart, Sparkles, Wind, Brain, Calendar, ArrowRight } from 'lucide-react'
 import { getMoods, getTodayMood } from '../lib/db'
@@ -11,9 +11,9 @@ export default function Home() {
   const [streak, setStreak] = useState(0)
   const [recentMoods, setRecentMoods] = useState<{ date: string; mood: number }[]>([])
 
-  useEffect(() => {
-    loadData()
-  }, [])
+  useState(() => {
+    loadData();
+  });
 
   const loadData = async () => {
     const today = await getTodayMood()
