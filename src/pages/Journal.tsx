@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { BookOpen, Sparkles, Trash2, Loader2, Plus } from 'lucide-react'
 import { getJournalEntries, saveJournalEntry, deleteJournalEntry } from '../lib/db'
-import { getJournalReflection } from '../lib/ai'
+import { getJournalReflection, AI_ENABLED } from '../lib/ai'
 import { useEffect } from 'react'
 
 type Entry = { id: string; title: string; body: string; reflection?: string; createdAt: number; updatedAt: number }
@@ -113,14 +113,14 @@ export default function Journal() {
             >
               Save Entry
             </button>
-            <button
+            {AI_ENABLED && <button
               onClick={handleReflection}
               disabled={!body.trim() || gettingReflection}
               className="px-4 py-3 rounded-lg bg-[var(--color-surface)] border border-[var(--color-primary)]/30 text-[var(--color-primary)] font-medium hover:bg-[var(--color-surface-hover)] transition-colors disabled:opacity-40 flex items-center gap-2"
             >
               {gettingReflection ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
               {reflection ? 'New Reflection' : 'Get Reflection'}
-            </button>
+            </button>}
           </div>
         </div>
       </div>
@@ -134,7 +134,7 @@ export default function Journal() {
           <div>
             <p className="page-kicker mb-2">Private reflection</p>
             <h1 className="page-title mb-2">Journal</h1>
-            <p className="page-subtitle">Write freely, keep it on device, and ask for a gentle reflection when you want one.</p>
+            <p className="page-subtitle">{AI_ENABLED ? 'Write freely, keep it on device, and ask for a gentle reflection when you want one.' : 'Write freely. Your entries stay on this device.'}</p>
           </div>
           <button
             onClick={newEntry}

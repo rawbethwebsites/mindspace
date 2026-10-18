@@ -3,6 +3,7 @@ import { Home, MessageCircle, BookOpen, Heart, Wind, Phone, AlertTriangle } from
 import { useState, useEffect } from 'react'
 import Disclaimer from './components/Disclaimer'
 import CrisisAlert from './components/CrisisAlert'
+import { AI_ENABLED } from './lib/ai'
 
 const navItems = [
   { to: '/', label: 'Home', icon: Home },
@@ -11,7 +12,7 @@ const navItems = [
   { to: '/mood', label: 'Mood', icon: Heart },
   { to: '/exercises', label: 'Exercises', icon: Wind },
   { to: '/resources', label: 'Resources', icon: Phone },
-]
+].filter((item) => AI_ENABLED || item.to !== '/chat')
 
 export default function App() {
   const [showCrisis, setShowCrisis] = useState(false)

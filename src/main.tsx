@@ -6,6 +6,7 @@ import './index.css'
 import App from './App.tsx'
 import Home from './pages/Home.tsx'
 import Chat from './pages/Chat.tsx'
+import { AI_ENABLED } from './lib/ai'
 import Journal from './pages/Journal.tsx'
 import Mood from './pages/Mood.tsx'
 import Exercises from './pages/Exercises.tsx'
@@ -18,7 +19,7 @@ createRoot(document.getElementById('root')!).render(
         <Routes>
           <Route path="/" element={<App />}>
             <Route index element={<Home />} />
-            <Route path="chat" element={<Chat />} />
+            {AI_ENABLED && <Route path="chat" element={<Chat />} />}
             <Route path="journal" element={<Journal />} />
             <Route path="mood" element={<Mood />} />
             <Route path="exercises" element={<Exercises />} />

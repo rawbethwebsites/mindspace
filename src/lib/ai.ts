@@ -2,6 +2,9 @@ import { SYSTEM_PROMPT, JOURNAL_REFLECTION_PROMPT } from './prompts'
 
 const API_BASE = import.meta.env.VITE_MINDSPACE_API_BASE || ''
 
+// The iOS build ships without AI features (VITE_AI_ENABLED=false): no hosted model yet.
+export const AI_ENABLED = import.meta.env.VITE_AI_ENABLED !== 'false'
+
 interface Message {
   role: 'user' | 'assistant' | 'system'
   content: string

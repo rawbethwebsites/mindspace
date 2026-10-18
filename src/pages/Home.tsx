@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { AI_ENABLED } from '../lib/ai'
 import { Link } from 'react-router-dom'
 import { MessageCircle, BookOpen, Heart, Sparkles, Wind, Brain, Calendar, ArrowRight } from 'lucide-react'
 import { getMoods, getTodayMood } from '../lib/db'
@@ -66,11 +67,11 @@ export default function Home() {
               {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
             </p>
             <h1 className="max-w-xl text-[2.2rem] md:text-5xl font-bold leading-[1.04] text-[var(--bg-deep)]">{greeting}.</h1>
-            <p className="mt-3 max-w-md text-sm md:text-base text-[#3f4a52]">Take one small moment for yourself. Check in, write it out, or talk through what is on your mind.</p>
+            <p className="mt-3 max-w-md text-sm md:text-base text-[#3f4a52]">Take one small moment for yourself. {AI_ENABLED ? 'Check in, write it out, or talk through what is on your mind.' : 'Check in, write it out, or take a minute to breathe.'}</p>
 
-            <Link to="/chat" className="mt-6 btn-sunset inline-flex w-fit items-center justify-center gap-2 px-5 py-3 text-sm">
+            <Link to={AI_ENABLED ? '/chat' : '/mood'} className="mt-6 btn-sunset inline-flex w-fit items-center justify-center gap-2 px-5 py-3 text-sm">
               <MessageCircle size={17} aria-hidden="true" />
-              Start a conversation
+              {AI_ENABLED ? 'Start a conversation' : 'Check in with yourself'}
             </Link>
 
             <div className="mt-auto grid grid-cols-3 overflow-hidden rounded-2xl border border-white/35 bg-[rgba(17,25,35,0.82)] text-white backdrop-blur-md">
@@ -98,17 +99,17 @@ export default function Home() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-4 mb-8">
-          <Link to="/chat" className="card card-hover p-5 group">
+          {AI_ENABLED && <Link to="/chat" className="card card-hover p-5 group">
             <div className="icon-tile w-11 h-11 mb-5"><MessageCircle size={21} aria-hidden="true" /></div>
             <h3 className="font-semibold text-lg text-[var(--text)]">Talk it through</h3>
             <p className="mt-1 text-sm text-[var(--text-muted)]">A gentle, private conversation at your pace.</p>
             <ArrowRight size={18} className="mt-5 text-[var(--color-primary)] transition-transform group-hover:translate-x-1" aria-hidden="true" />
-          </Link>
+          </Link>}
 
           <Link to="/journal" className="card card-hover p-5 group">
             <div className="icon-tile w-11 h-11 mb-5 !bg-[rgba(51,108,120,.1)] !border-[rgba(51,108,120,.14)] !text-[var(--color-secondary)]"><BookOpen size={21} aria-hidden="true" /></div>
             <h3 className="font-semibold text-lg text-[var(--text)]">Write freely</h3>
-            <p className="mt-1 text-sm text-[var(--text-muted)]">Journal privately and request a reflection.</p>
+            <p className="mt-1 text-sm text-[var(--text-muted)]">{AI_ENABLED ? 'Journal privately and request a reflection.' : 'Journal privately. Everything stays on your phone.'}</p>
             <ArrowRight size={18} className="mt-5 text-[var(--color-secondary)] transition-transform group-hover:translate-x-1" aria-hidden="true" />
           </Link>
 

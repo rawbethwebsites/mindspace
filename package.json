@@ -7,9 +7,12 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:ios": "tsc -b && VITE_AI_ENABLED=false vite build && cap sync ios"
   },
   "dependencies": {
+    "@capacitor/core": "^7.6.9",
+    "@capacitor/ios": "^7.6.9",
     "@convex-dev/auth": "^0.0.95",
     "convex": "^1.45.0",
     "idb": "^8.0.3",
@@ -20,6 +23,7 @@
     "recharts": "^3.9.2"
   },
   "devDependencies": {
+    "@capacitor/cli": "^7.6.9",
     "@tailwindcss/vite": "^4.3.2",
     "@types/node": "^24.13.2",
     "@types/react": "^19.2.17",
