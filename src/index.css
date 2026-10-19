@@ -308,6 +308,34 @@ button, a[role="button"], .touch-target { min-height: 44px; min-width: 44px; }
 .morph-btn.is-compact { max-width: 48px; border-radius: 999px; padding-inline: 0; }
 .morph-btn.is-done { background: var(--color-success); }
 
+/* Chat */
+@keyframes msgIn { from { opacity: 0; transform: translateY(10px) scale(0.98); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+.msg-in { animation: msgIn 380ms var(--ease-calm) both; transform-origin: bottom left; }
+@keyframes dot { 0%, 80%, 100% { transform: translateY(0); opacity: .35; } 40% { transform: translateY(-4px); opacity: 1; } }
+.typing-dots { display: inline-flex; gap: 5px; padding: 6px 2px; }
+.typing-dots i { width: 7px; height: 7px; border-radius: 99px; background: var(--color-primary); animation: dot 1.2s ease-in-out infinite; }
+.typing-dots i:nth-child(2) { animation-delay: .15s; } .typing-dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes sunBreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+.chat-sun { animation: sunBreathe 6s ease-in-out infinite; box-shadow: 0 14px 30px rgba(189, 65, 35, .18); }
+.chat-bar { transition: border-color var(--t-std) var(--ease-std), box-shadow var(--t-std) var(--ease-std); }
+.chat-bar:focus-within { border-color: rgba(217, 84, 43, .45); box-shadow: 0 0 0 4px rgba(217, 84, 43, .08); }
+@keyframes drawerIn { from { transform: translateX(-100%); } to { transform: none; } }
+.drawer-in { animation: drawerIn 420ms var(--ease-calm) both; }
+
+/* First-launch logo: the tile settles, the sun rises over the horizon, the lines draw out, the name follows */
+.intro { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: #f4f1eb; pointer-events: none; animation: veilOut 520ms var(--ease-std) 1950ms both; }
+.intro svg { width: 112px; height: 112px; overflow: visible; }
+.intro .tile { transform-origin: 50px 50px; animation: tileIn 640ms var(--spring) both; }
+.intro .sun { animation: sunRise 900ms var(--spring) 260ms both; }
+.intro .ln { transform-box: fill-box; transform-origin: center; animation: lineDraw 520ms var(--spring) both; }
+.intro .ln1 { animation-delay: 560ms; } .intro .ln2 { animation-delay: 660ms; } .intro .ln3 { animation-delay: 760ms; }
+.intro .name { margin-top: 22px; font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #111923; animation: riseIn 560ms var(--ease-calm) 950ms both; }
+.intro .tag { margin-top: 4px; font-size: 14px; color: #4b5560; animation: riseIn 560ms var(--ease-calm) 1080ms both; }
+@keyframes tileIn { from { opacity: 0; transform: scale(0.82); } to { opacity: 1; transform: none; } }
+@keyframes sunRise { from { transform: translateY(28px); } to { transform: none; } }
+@keyframes lineDraw { from { transform: scaleX(0); } to { transform: none; } }
+
 /* No rubber-band bounce past the page edges in the app shell */
 html, body { overscroll-behavior: none; }
 

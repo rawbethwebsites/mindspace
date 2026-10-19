@@ -15,19 +15,46 @@ const navItems = [
   { to: '/resources', label: 'Resources', icon: Phone },
 ].filter((item) => AI_ENABLED || item.to !== '/chat')
 
-// Shown once per launch: continues the native splash, then dissolves into the app.
+// The very first launch plays the logo intro; later launches get a short dissolve from the splash.
 function LaunchVeil() {
-  const [show, setShow] = useState(() => {
-    try { return !sessionStorage.getItem('mindspace-launched') } catch { return true }
+  const [mode, setMode] = useState<'intro' | 'veil' | null>(() => {
+    try {
+      if (sessionStorage.getItem('mindspace-launched')) return null
+      return localStorage.getItem('mindspace-intro-seen') ? 'veil' : 'intro'
+    } catch { return 'veil' }
   })
   useEffect(() => {
-    if (!show) return
-    try { sessionStorage.setItem('mindspace-launched', '1') } catch { /* private mode */ }
-    const t = setTimeout(() => setShow(false), 1200)
+    if (!mode) return
+    try {
+      sessionStorage.setItem('mindspace-launched', '1')
+      localStorage.setItem('mindspace-intro-seen', '1')
+    } catch { /* private mode */ }
+    const t = setTimeout(() => setMode(null), mode === 'intro' ? 2600 : 1200)
     return () => clearTimeout(t)
-  }, [show])
-  if (!show) return null
-  return <div className="launch-veil" aria-hidden="true"><img src="/mindspace-icon.png" alt="" /></div>
+  }, [mode])
+  if (mode === 'veil') return <div className="launch-veil" aria-hidden="true"><img src="/mindspace-icon.png" alt="" /></div>
+  if (mode !== 'intro') return null
+  return (
+    <div className="intro" aria-hidden="true">
+      <svg viewBox="0 0 100 100">
+        <defs>
+          <linearGradient id="introSky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#bd4123" /><stop offset="0.56" stopColor="#ef7851" /><stop offset="1" stopColor="#f2bd5b" />
+          </linearGradient>
+          <clipPath id="introHorizon"><rect x="0" y="0" width="100" height="54.7" /></clipPath>
+        </defs>
+        <g className="tile">
+          <rect width="100" height="100" rx="22.5" fill="url(#introSky)" />
+          <g clipPath="url(#introHorizon)"><circle className="sun" cx="50" cy="54.7" r="24.4" fill="#fffaf0" /></g>
+          <rect className="ln ln1" x="14.6" y="56.9" width="70.8" height="3.4" rx="1.7" fill="#fffaf0" />
+          <rect className="ln ln2" x="26.4" y="63.3" width="47.2" height="3.4" rx="1.7" fill="#fffaf0" opacity="0.75" />
+          <rect className="ln ln3" x="37.3" y="69.7" width="25.4" height="3.4" rx="1.7" fill="#fffaf0" opacity="0.5" />
+        </g>
+      </svg>
+      <div className="name">Mindspace</div>
+      <div className="tag">A quiet place for you</div>
+    </div>
+  )
 }
 
 // Liquid tab indicator (after "Shape morphing through UI states", motionvideo.xyz): one pill
