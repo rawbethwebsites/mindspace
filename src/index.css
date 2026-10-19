@@ -228,12 +228,17 @@ button, a[role="button"], .touch-target { min-height: 44px; min-width: 44px; }
   --t-quick: 140ms;
   --t-std: 360ms;
   --t-slow: 560ms;
+  /* Closed-form spring step responses (zeta 0.78 / 0.82): ~2% and ~1% overshoot, no bounce */
+  --spring: linear(0, 0.022, 0.079, 0.158, 0.249, 0.345, 0.44, 0.531, 0.615, 0.69, 0.756, 0.813, 0.861, 0.901, 0.933, 0.959, 0.978, 0.993, 1.004, 1.011, 1.016, 1.019, 1.02, 1.02, 1.019, 1.017, 1.016, 1.014, 1.012, 1.01, 1.008, 1.007, 1.005, 1.004, 1.003, 1.002, 1);
+  --spring-quick: linear(0, 0.021, 0.076, 0.151, 0.238, 0.33, 0.421, 0.507, 0.588, 0.661, 0.725, 0.781, 0.829, 0.869, 0.903, 0.93, 0.952, 0.969, 0.982, 0.992, 0.999, 1.004, 1.008, 1.01, 1.011, 1.011, 1.011, 1.01, 1.009, 1.008, 1.007, 1.006, 1.005, 1.005, 1.004, 1.003, 1);
+}
+@supports (transition-timing-function: linear(0, 1)) {
+  :root { --ease-calm: var(--spring); --ease-pop: var(--spring-quick); }
 }
 
 @keyframes pageFade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-@keyframes moodPop { 0% { transform: scale(1); } 45% { transform: scale(1.22); } 100% { transform: scale(1.06); } }
-@keyframes savedPop { 0% { transform: scale(1); } 40% { transform: scale(1.035); } 100% { transform: scale(1); } }
+@keyframes moodPop { from { transform: scale(0.86); } to { transform: scale(1.08); } }
 @keyframes veilOut { to { opacity: 0; visibility: hidden; } }
 @keyframes veilIcon { 0% { transform: none; } 100% { transform: translateY(-10px) scale(1.06); opacity: 0; } }
 @keyframes heroDrift { from { transform: scale(1.02) translateY(0); } to { transform: scale(1.08) translateY(-1.5%); } }
@@ -263,7 +268,48 @@ button, a[role="button"], .touch-target { min-height: 44px; min-width: 44px; }
 
 /* Mood check-in */
 .mood-pop { animation: moodPop var(--t-std) var(--ease-pop) both; }
-.saved-pop { animation: savedPop var(--t-std) var(--ease-calm); background: var(--color-success) !important; }
+
+/* Mood chart: bars grow up from the baseline in a short wave */
+@keyframes barGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.bar-grow { transform-origin: bottom; animation: barGrow var(--t-slow) var(--ease-calm) both; }
+
+/* Notch + home indicator (iOS viewport-fit=cover; env() is 0 on the web) */
+.status-shield { position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top); background: var(--bg); z-index: 60; pointer-events: none; }
+.app-page { padding-top: calc(1.5rem + env(safe-area-inset-top)); }
+.nav-safe { padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); }
+@media (min-width: 768px) { .app-page { padding-top: calc(2.5rem + env(safe-area-inset-top)); } .nav-safe { padding-bottom: 1.25rem; } }
+
+.chat-shell { height: 100dvh; padding-top: env(safe-area-inset-top); padding-bottom: calc(4.4rem + env(safe-area-inset-bottom)); }
+@media (min-width: 768px) { .chat-shell { padding-bottom: 2rem; } }
+
+/* Floating chat button (phones): coral sunrise, soft breathing halo */
+.chat-fab { position: fixed; right: 1rem; bottom: calc(5.75rem + env(safe-area-inset-bottom)); z-index: 40;
+  width: 56px; height: 56px; border-radius: 999px; display: flex; align-items: center; justify-content: center;
+  color: #fffaf1; background: #d9542b; box-shadow: 0 10px 24px rgba(17, 25, 35, .22); }
+
+
+/* Keyboard open on a phone: the tab bar and chat button step aside, the chat input sits on the keyboard */
+@media (max-width: 767px) {
+  body.kb-open .nav-safe, body.kb-open .chat-fab { display: none; }
+  body.kb-open .chat-shell { padding-bottom: 0.5rem; }
+}
+
+/* Liquid tab pill */
+.tab-liquid { position: absolute; top: 0; bottom: 0; border-radius: 14px; background: rgba(255, 255, 255, 0.1); z-index: 0;
+  transition-property: left, right, opacity; transition-timing-function: var(--spring), var(--spring), ease; }
+
+/* Content swaps inside a morphing shape: short blur in */
+@keyframes swapIn { from { opacity: 0; filter: blur(5px); transform: scale(0.94); } to { opacity: 1; filter: none; transform: none; } }
+.swap-in { animation: swapIn 220ms var(--ease-calm) both; }
+
+/* Morphing button: full-width pill -> circle (loader/check) -> back */
+.morph-btn { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 100%; margin-inline: auto;
+  transition: max-width 520ms var(--spring), border-radius 520ms var(--spring), background 300ms ease, transform var(--t-std) var(--ease-calm); }
+.morph-btn.is-compact { max-width: 48px; border-radius: 999px; padding-inline: 0; }
+.morph-btn.is-done { background: var(--color-success); }
+
+/* No rubber-band bounce past the page edges in the app shell */
+html, body { overscroll-behavior: none; }
 
 /* Home hero: slow ambient drift */
 .hero-drift { animation: heroDrift 24s ease-in-out infinite alternate; transform-origin: 50% 60%; }

@@ -1,13 +1,14 @@
-import { Outlet, NavLink, useLocation } from 'react-router-dom'
+import { Outlet, NavLink, Link, useLocation } from 'react-router-dom'
 import { Home, MessageCircle, BookOpen, Heart, Wind, Phone, AlertTriangle } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Disclaimer from './components/Disclaimer'
 import CrisisAlert from './components/CrisisAlert'
 import { AI_ENABLED } from './lib/ai'
 
 const navItems = [
   { to: '/', label: 'Home', icon: Home },
-  { to: '/chat', label: 'Chat', icon: MessageCircle },
+  // On phones the chat lives on the floating button instead of the tab bar.
+  { to: '/chat', label: 'Chat', icon: MessageCircle, mobileHidden: true },
   { to: '/journal', label: 'Journal', icon: BookOpen },
   { to: '/mood', label: 'Mood', icon: Heart },
   { to: '/exercises', label: 'Exercises', icon: Wind },
@@ -27,6 +28,31 @@ function LaunchVeil() {
   }, [show])
   if (!show) return null
   return <div className="launch-veil" aria-hidden="true"><img src="/mindspace-icon.png" alt="" /></div>
+}
+
+// Liquid tab indicator (after "Shape morphing through UI states", motionvideo.xyz): one pill
+// whose two edges ride different springs, so the leading edge stretches ahead of the trailing one.
+const mobileItems = navItems.filter((i) => !('mobileHidden' in i))
+
+function TabLiquid({ pathname }: { pathname: string }) {
+  const n = mobileItems.length
+  const idx = mobileItems.findIndex((i) => (i.to === '/' ? pathname === '/' : pathname.startsWith(i.to)))
+  const prev = useRef(idx)
+  const movingRight = idx >= prev.current
+  useEffect(() => { if (idx >= 0) prev.current = idx }, [idx])
+  const at = idx >= 0 ? idx : prev.current
+  return (
+    <span
+      aria-hidden="true"
+      className="tab-liquid md:hidden"
+      style={{
+        left: `calc(${(at / n) * 100}% + 3px)`,
+        right: `calc(${((n - at - 1) / n) * 100}% + 3px)`,
+        opacity: idx >= 0 ? 1 : 0,
+        transitionDuration: movingRight ? '560ms, 320ms, 200ms' : '320ms, 560ms, 200ms',
+      }}
+    />
+  )
 }
 
 export default function App() {
@@ -57,9 +83,10 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[var(--bg)] text-[var(--text)]">
       <LaunchVeil />
+      <div className="status-shield" aria-hidden="true" />
       <a href="#main-content" className="skip-link">Skip to main content</a>
 
-      <aside className="fixed bottom-0 left-0 right-0 md:bottom-auto md:right-auto md:w-64 md:min-h-screen md:top-0 bg-[rgba(17,25,35,0.96)] backdrop-blur-xl border-t md:border-t-0 md:border-r border-white/10 flex md:flex-col items-center md:items-stretch px-2 md:px-4 py-2 md:py-5 gap-1 md:gap-2 z-50">
+      <aside className="nav-safe fixed bottom-0 left-0 right-0 md:bottom-auto md:right-auto md:w-64 md:min-h-screen md:top-0 bg-[rgba(17,25,35,0.96)] backdrop-blur-xl border-t md:border-t-0 md:border-r border-white/10 flex md:flex-col items-center md:items-stretch px-2 md:px-4 py-2 md:py-5 gap-1 md:gap-2 z-50">
         <div className="hidden md:flex items-center gap-3 mb-7 px-2 py-1">
           <img src="/mindspace-icon.png" alt="" aria-hidden="true" className="w-10 h-10 rounded-lg glow-sunset" />
           <div>
@@ -67,7 +94,8 @@ export default function App() {
             <span className="block text-xs text-white/50">Private mental wellness</span>
           </div>
         </div>
-        <nav aria-label="Primary" className="flex w-full items-center justify-around md:flex-col md:items-stretch md:justify-start">
+        <nav aria-label="Primary" className="relative flex w-full items-center justify-around md:flex-col md:items-stretch md:justify-start">
+          <TabLiquid pathname={location.pathname} />
           {navItems.map((item) => (
             <NavLink
               key={item.to}
@@ -75,9 +103,9 @@ export default function App() {
               end={item.to === '/'}
               aria-label={item.label}
               className={({ isActive }) =>
-                `flex min-w-0 flex-1 flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 px-1 md:px-3 py-1.5 md:py-2.5 rounded-xl text-[10px] md:text-sm transition-all min-h-[50px] md:min-h-[44px] md:w-full ${
+                `${'mobileHidden' in item ? 'hidden md:flex' : 'flex'} relative z-10 min-w-0 flex-1 flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 px-1 md:px-3 py-1.5 md:py-2.5 rounded-xl text-[10px] md:text-sm transition-all min-h-[50px] md:min-h-[44px] md:w-full ${
                   isActive
-                    ? 'tab-active bg-white/10 text-[#f5c56a] font-semibold md:shadow-[inset_3px_0_0_0_#f5c56a]'
+                    ? 'tab-active md:bg-white/10 text-[#f5c56a] font-semibold md:shadow-[inset_3px_0_0_0_#f5c56a]'
                     : 'font-medium text-white/55 hover:bg-white/8 hover:text-white'
                 }`
               }
@@ -98,18 +126,26 @@ export default function App() {
       </aside>
 
       <main id="main-content" className="flex-1 md:ml-64 min-h-screen">
-        <button
-          onClick={() => setShowCrisis(true)}
-          aria-label="Get crisis help"
-          className="md:hidden fixed bottom-[9rem] right-4 z-40 w-11 h-11 rounded-full bg-[var(--color-error)] text-white shadow-lg flex items-center justify-center"
-        >
-          <AlertTriangle size={20} aria-hidden="true" />
-        </button>
+        {AI_ENABLED ? (
+          location.pathname !== '/chat' && (
+            <Link to="/chat" aria-label="Talk it through (chat)" className="chat-fab press md:hidden">
+              <MessageCircle size={24} aria-hidden="true" />
+            </Link>
+          )
+        ) : (
+          <button
+            onClick={() => setShowCrisis(true)}
+            aria-label="Get crisis help"
+            className="md:hidden fixed bottom-[9rem] right-4 z-40 w-11 h-11 rounded-full bg-[var(--color-error)] text-white shadow-lg flex items-center justify-center"
+          >
+            <AlertTriangle size={20} aria-hidden="true" />
+          </button>
+        )}
         <div key={location.pathname} className="page-enter"><Outlet /></div>
       </main>
 
       <footer className="hidden md:block fixed bottom-0 left-64 right-0 bg-[rgba(244,241,235,0.9)] backdrop-blur-xl border-t border-[var(--color-border)] px-4 py-2 text-center text-[10px] text-[var(--color-on-surface-muted)] z-30">
-        Mindspace is not a replacement for professional therapy. If you're in crisis, call 988 (US) or your local emergency number.
+        Mindspace is not a replacement for professional therapy. If you're in crisis, call your local emergency number (112 in Nigeria, 999 in the UK, 988 in the US).
       </footer>
 
       {showCrisis && <CrisisAlert onClose={() => setShowCrisis(false)} />}

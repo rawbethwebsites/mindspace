@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { AI_ENABLED } from '../lib/ai'
 import { Link } from 'react-router-dom'
 import { MessageCircle, BookOpen, Heart, Sparkles, Wind, Brain, Calendar, ArrowRight } from 'lucide-react'
-import { getMoods, getTodayMood } from '../lib/db'
+import { getMoods, getTodayMood, localDay } from '../lib/db'
 
 const moodLabels = ['Struggling', 'Low', 'Okay', 'Good', 'Great']
 const moodColors = ['#f0505c', '#f88820', '#f8b830', '#f8a030', '#6ab070']
@@ -20,10 +20,9 @@ export default function Home() {
     setRecentMoods(allMoods.slice(-7))
 
     let s = 0
-    const today_str = new Date().toISOString().split('T')[0]
     const moodDates = new Set(allMoods.map(m => m.date))
-    let d = new Date(today_str)
-    while (moodDates.has(d.toISOString().split('T')[0])) {
+    const d = new Date()
+    while (moodDates.has(localDay(d))) {
       s++
       d.setDate(d.getDate() - 1)
     }
@@ -114,7 +113,7 @@ export default function Home() {
           <Link to="/exercises" className="card card-hover p-5 group">
             <div className="icon-tile w-11 h-11 mb-5 !bg-[rgba(242,189,91,.18)] !border-[rgba(217,153,45,.2)] !text-[#93620f]"><todayExercise.icon size={21} aria-hidden="true" /></div>
             <h3 className="font-semibold text-lg text-[var(--text)]">Reset your body</h3>
-            <p className="mt-1 text-sm text-[var(--text-muted)]">Try {todayExercise.name.toLowerCase()} for a few minutes.</p>
+            <p className="mt-1 text-sm text-[var(--text-muted)]">Try {todayExercise.name} for a few minutes.</p>
             <ArrowRight size={18} className="mt-5 text-[#93620f] transition-transform group-hover:translate-x-1" aria-hidden="true" />
           </Link>
         </div>
@@ -129,12 +128,12 @@ export default function Home() {
               </div>
               <div className="flex items-end justify-between gap-2 h-24" role="img" aria-label={`Mood trend for last ${recentMoods.length} days: ${recentMoods.map(m => moodLabels[m.mood]).join(', ')}`}>
                 {recentMoods.map((m, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                  <div key={i} className="flex-1 h-full flex flex-col items-center justify-end gap-1">
                     <div
-                      className="w-full rounded-t-lg"
-                      style={{ height: `${(m.mood / 4) * 100}%`, background: `linear-gradient(to top, ${moodColors[m.mood]}50, ${moodColors[m.mood]})` }}
+                      className="bar-grow w-full rounded-t-lg rounded-b-sm"
+                      style={{ height: `${14 + (m.mood / 4) * 86}%`, animationDelay: `${i * 40}ms`, background: `linear-gradient(to top, ${moodColors[m.mood]}50, ${moodColors[m.mood]})` }}
                     />
-                    <span className="text-xs text-[var(--color-on-surface-muted)]">{moodLabels[m.mood].slice(0, 1)}</span>
+                    <span className="text-xs text-[var(--color-on-surface-muted)]" aria-hidden="true">{new Date(`${m.date}T12:00:00`).toLocaleDateString(undefined, { weekday: 'narrow' })}</span>
                   </div>
                 ))}
               </div>

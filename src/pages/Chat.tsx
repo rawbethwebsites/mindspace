@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Send, Plus, MessageCircle, Trash2, Loader2 } from 'lucide-react'
+import { Send, Plus, MessageCircle, Trash2, Loader2, LifeBuoy } from 'lucide-react'
 import { streamChat, checkOllamaConnection } from '../lib/ai'
 import { detectCrisis } from '../lib/crisis'
 import { saveConversation, getAllConversations, deleteConversation, type ChatMessage } from '../lib/db'
@@ -135,7 +135,7 @@ export default function Chat() {
   }
 
   return (
-    <div className="flex h-screen pb-[4.4rem] md:pb-8 bg-[var(--bg)]">
+    <div className="chat-shell flex bg-[var(--bg)]">
       {/* Conversation list */}
       <div className={`absolute inset-y-0 left-0 z-30 w-72 border-r border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl flex-col md:static md:shadow-none ${showConvList ? 'flex' : 'hidden'} md:flex`}>
         <button
@@ -191,6 +191,12 @@ export default function Chat() {
               {online ? 'AI online' : 'AI offline'}
             </span>
           )}
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('show-crisis'))}
+            className={`${online === null ? 'ml-auto' : ''} press shrink-0 whitespace-nowrap flex items-center gap-1.5 text-xs font-semibold px-3 rounded-full min-h-[36px] text-[var(--color-error)] bg-[var(--color-error-light)] border border-[rgba(200,63,77,.18)]`}
+          >
+            <LifeBuoy size={14} aria-hidden="true" /> Get help now
+          </button>
         </div>
 
         {/* Messages */}

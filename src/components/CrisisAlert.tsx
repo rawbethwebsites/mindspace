@@ -15,9 +15,20 @@ export default function CrisisAlert({ onClose }: { onClose: () => void }) {
               <p className="text-sm text-[var(--color-on-surface-muted)]">If you're in crisis, please reach out now.</p>
             </div>
           </div>
-          <button onClick={onClose} className="text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] p-1">
+          <button onClick={onClose} aria-label="Close" className="text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] min-w-[44px] min-h-[44px] flex items-center justify-center">
             <X size={20} />
           </button>
+        </div>
+
+        <div className="rounded-xl bg-[var(--color-error)]/10 border border-[rgba(200,63,77,.2)] p-4 mb-4">
+          <p className="text-sm font-semibold text-[var(--color-on-surface)] mb-3">In immediate danger? Call emergency services now.</p>
+          <div className="flex flex-wrap gap-2">
+            {[['Nigeria', '112'], ['UK', '999'], ['US', '911']].map(([region, num]) => (
+              <a key={num} href={`tel:${num}`} className="press flex items-center gap-1.5 rounded-lg bg-[var(--color-error)] text-white font-semibold text-sm px-3.5 min-h-[44px]">
+                <Phone size={15} aria-hidden="true" /> {num} <span className="font-normal opacity-85">{region}</span>
+              </a>
+            ))}
+          </div>
         </div>
 
         <div className="space-y-3">
@@ -27,7 +38,7 @@ export default function CrisisAlert({ onClose }: { onClose: () => void }) {
               <p className="text-sm text-[var(--color-on-surface-muted)] mb-2">{r.description}</p>
               <div className="flex flex-wrap gap-3 text-sm">
                 {r.phone && (
-                  <a href={`tel:${r.phone}`} className="flex items-center gap-1.5 text-[var(--color-error)] font-medium hover:underline">
+                  <a href={`tel:${r.phone.replace(/[^0-9+]/g, '')}`} className="flex items-center gap-1.5 text-[var(--color-error)] font-medium hover:underline">
                     <Phone size={14} /> {r.phone}
                   </a>
                 )}

@@ -1,4 +1,4 @@
-import { Heart, Shield } from 'lucide-react'
+import { Shield } from 'lucide-react'
 import { AI_ENABLED } from '../lib/ai'
 
 export default function Disclaimer({ onAck }: { onAck: () => void }) {
@@ -6,9 +6,7 @@ export default function Disclaimer({ onAck }: { onAck: () => void }) {
     <div className="min-h-screen flex items-center justify-center bg-[var(--color-background)] p-4">
       <div className="max-w-md w-full">
         <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-[var(--color-primary-dark)] to-[var(--color-primary-light)] flex items-center justify-center mb-4 glow-sunset">
-            <Heart size={28} className="text-white" />
-          </div>
+          <img src="/mindspace-icon.png" alt="" aria-hidden="true" className="w-16 h-16 rounded-2xl mb-4 glow-sunset" />
           <h1 className="text-2xl font-bold text-[var(--color-on-surface)]">Mindspace</h1>
           <p className="text-sm text-[var(--color-on-surface-muted)] mt-1">Your private space for reflection and support</p>
         </div>
@@ -39,7 +37,7 @@ export default function Disclaimer({ onAck }: { onAck: () => void }) {
         </div>
 
         <p className="text-center text-xs text-[var(--color-on-surface-muted)] mt-4">
-          If you need immediate help, call 988 (US) or your local emergency number.
+          If you need immediate help, call your local emergency number (112 in Nigeria, 999 in the UK, 988 in the US).
         </p>
       </div>
     </div>

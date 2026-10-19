@@ -36,7 +36,7 @@ export const crisisResources = [
     text: '',
     url: 'https://findahelpline.com/countries/ng/topics/suicidal-thoughts',
     regions: ['Nigeria'],
-    description: 'Free, confidential crisis lines in Nigeria, checked and kept up to date.',
+    description: 'Free, confidential crisis lines in Nigeria, many open 24/7, checked and kept up to date.',
   },
   {
     name: 'Samaritans',

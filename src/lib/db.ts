@@ -21,6 +21,13 @@ export interface ChatMessage {
   timestamp: number
 }
 
+// Calendar day on the user's own clock (YYYY-MM-DD). toISOString() would use UTC and
+// file a just-after-midnight check-in under yesterday.
+export function localDay(d: Date = new Date()) {
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
+}
+
 let dbPromise: Promise<IDBPDatabase<MindspaceDB>> | null = null
 
 function getDB() {
@@ -62,7 +69,7 @@ export async function deleteConversation(id: string) {
 // Mood functions
 export async function saveMood(mood: number, note?: string) {
   const db = await getDB()
-  const date = new Date().toISOString().split('T')[0]
+  const date = localDay()
   const id = `mood-${date}`
   await db.put('moods', { id, date, mood, note, createdAt: Date.now() })
 }
@@ -75,7 +82,7 @@ export async function getMoods() {
 
 export async function getTodayMood() {
   const db = await getDB()
-  const date = new Date().toISOString().split('T')[0]
+  const date = localDay()
   return db.get('moods', `mood-${date}`)
 }
 
@@ -125,4 +132,26 @@ export async function exportAllData() {
     getJournalEntries(),
   ])
   return { chats, moods, journal, exportedAt: new Date().toISOString() }
+}
+// Screenshot builds only (VITE_DEMO_SEED=true): fill two weeks of sample check-ins and a few entries.
+export async function seedDemoData() {
+  const db = await getDB()
+  if ((await db.count('moods')) > 0) return
+  const moods = [2, 3, 2, 1, 2, 3, 3, 2, 3, 4, 3, 2, 3, 3]
+  const notes: Record<number, string> = { 3: 'Long day. Took a walk after.', 9: 'Slept well, felt light.', 13: 'Calmer after breathing.' }
+  const day = 86400000
+  for (let i = 0; i < moods.length; i++) {
+    const t = Date.now() - (moods.length - 1 - i) * day
+    const date = localDay(new Date(t))
+    await db.put('moods', { id: `mood-${date}`, date, mood: moods[i], note: notes[i], createdAt: t })
+  }
+  const entries = [
+    ['A quieter morning', 'Woke up before the alarm and sat with my tea for ten minutes before checking my phone. It changed the whole morning. I want to keep doing that.', 0],
+    ['Things I handled well', 'The meeting went better than I feared. I said what I needed to say, even with my heart racing. Small win, but it counts.', 2],
+    ['Letting the week go', 'Today was a lot, and that is okay. Writing it down makes it feel smaller.', 5],
+  ] as const
+  for (const [title, body, ago] of entries) {
+    const t = Date.now() - ago * day - 3600000
+    await db.put('journal', { id: `demo-${ago}`, title, body, createdAt: t, updatedAt: t })
+  }
 }

@@ -68,7 +68,8 @@ function BackButton({ onBack }: { onBack: () => void }) {
     <button
       onClick={onBack}
       aria-label="Go back to exercises"
-      className="absolute top-4 left-4 text-sm text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] flex items-center gap-1 min-h-[44px] px-2 rounded-lg"
+      style={{ top: 'calc(1rem + env(safe-area-inset-top))' }}
+      className="press absolute left-4 text-sm text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] flex items-center gap-1 min-h-[44px] px-2 rounded-lg"
     >
       <X size={16} aria-hidden="true" /> Back
     </button>
