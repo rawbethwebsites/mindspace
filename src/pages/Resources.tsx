@@ -2,9 +2,17 @@ import type { ElementType } from 'react'
 import {
   Phone, MessageSquare, Globe, Heart, Search, BookOpen,
   AlertTriangle, Clock, Shield, ArrowUpRight, Check,
-  Brain, Sparkles, Users, Stethoscope, Video, Eye,
+  Brain, Sparkles, Users, Stethoscope, Video, Eye, Trash2,
 } from 'lucide-react'
 import { crisisResources } from '../lib/crisis'
+import { clearAllData } from '../lib/db'
+
+async function deleteEverything() {
+  if (!window.confirm('Delete all your moods, journal entries and history from this device? This cannot be undone.')) return
+  await clearAllData()
+  localStorage.clear()
+  window.location.href = '/'
+}
 
 // ─────────────────────────────────────────────
 // Content data (preserved from original)
@@ -36,6 +44,7 @@ const therapistDirectories = [
 ]
 
 const emergencyNumbers = [
+  { region: 'Nigeria', num: '112' },
   { region: 'US', num: '911' },
   { region: 'UK', num: '999' },
   { region: 'Europe', num: '112' },
@@ -110,7 +119,7 @@ function CrisisCard({ r, priority }: { r: typeof crisisResources[0]; priority: b
       <p className="text-sm text-[var(--text-muted)] leading-relaxed flex-1">{r.description}</p>
       <div className="flex flex-wrap gap-2 pt-1">
         {r.phone && (
-          <a href={`tel:${r.phone}`} className="btn-sunset flex items-center gap-1.5 px-3.5 py-2.5 text-sm min-h-[44px]" aria-label={`Call ${r.name} at ${r.phone}`}>
+          <a href={`tel:${r.phone.replace(/[^0-9+]/g, "")}`} className="btn-sunset flex items-center gap-1.5 px-3.5 py-2.5 text-sm min-h-[44px]" aria-label={`Call ${r.name} at ${r.phone}`}>
             <Phone size={14} aria-hidden="true" /> {r.phone}
           </a>
         )}
@@ -329,6 +338,19 @@ export default function Resources() {
             <a href="tel:988" className="text-[var(--color-error)] font-semibold hover:underline">988</a> (US) or your local emergency number. These resources are provided for informational purposes and do not constitute medical advice.
           </p>
         </footer>
+
+        {/* ═══ Your data ═══ */}
+        <section className="glass-2 p-5 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-[var(--text-muted)] leading-relaxed">
+            <span className="text-[var(--text)] font-medium">Your data:</span> everything you log stays on this device.
+          </p>
+          <button
+            onClick={deleteEverything}
+            className="flex items-center gap-1.5 px-3.5 py-2.5 text-sm min-h-[44px] rounded-lg border border-[var(--color-error)]/40 text-[var(--color-error)] font-semibold"
+          >
+            <Trash2 size={15} aria-hidden="true" /> Delete all my data
+          </button>
+        </section>
       </div>
     </div>
   )

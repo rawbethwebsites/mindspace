@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AI_ENABLED } from '../lib/ai'
 import { Link } from 'react-router-dom'
 import { MessageCircle, BookOpen, Heart, Sparkles, Wind, Brain, Calendar, ArrowRight } from 'lucide-react'
@@ -11,10 +11,6 @@ export default function Home() {
   const [todayMood, setTodayMood] = useState<number | null>(null)
   const [streak, setStreak] = useState(0)
   const [recentMoods, setRecentMoods] = useState<{ date: string; mood: number }[]>([])
-
-  useState(() => {
-    loadData();
-  });
 
   const loadData = async () => {
     const today = await getTodayMood()
@@ -34,6 +30,10 @@ export default function Home() {
     setStreak(s)
   }
 
+  useEffect(() => {
+    loadData()
+  }, [])
+
   const exercises = [
     { name: 'Box Breathing', desc: '4-4-4-4 breathing to calm your nervous system', icon: Wind },
     { name: '5-4-3-2-1 Grounding', desc: 'Use your senses to anchor to the present', icon: Brain },
@@ -48,9 +48,7 @@ export default function Home() {
     <div className="app-page">
       <div className="max-w-6xl mx-auto">
         <div className="md:hidden flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-xl bg-[var(--bg-deep)] flex items-center justify-center p-2" aria-hidden="true">
-            <img src="/tbn-mark-white.png" alt="" className="w-full h-full object-contain" />
-          </div>
+          <img src="/mindspace-icon.png" alt="" aria-hidden="true" className="w-10 h-10 rounded-xl shadow-sm" />
           <div>
             <p className="font-bold text-[var(--text)] leading-tight">Mindspace</p>
             <p className="text-xs text-[var(--text-muted)]">A quiet place for you</p>

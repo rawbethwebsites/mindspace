@@ -138,7 +138,7 @@ export default function Journal() {
           </div>
           <button
             onClick={newEntry}
-            className="btn-sunset flex items-center gap-2 px-4 py-2.5 text-sm min-h-[44px]"
+            className="btn-sunset shrink-0 whitespace-nowrap flex items-center gap-2 px-4 py-2.5 text-sm min-h-[44px]"
           >
             <Plus size={16} /> New Entry
           </button>

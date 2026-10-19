@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
   appId: 'space.theboostnation.mindful',
-  appName: 'Mindful',
+  appName: 'Mindspace',
   webDir: 'dist',
   ios: { contentInset: 'always' },
 }

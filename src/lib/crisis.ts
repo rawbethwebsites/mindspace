@@ -31,6 +31,22 @@ export function detectCrisis(text: string): boolean {
 
 export const crisisResources = [
   {
+    name: 'Find A Helpline: Nigeria',
+    phone: '',
+    text: '',
+    url: 'https://findahelpline.com/countries/ng/topics/suicidal-thoughts',
+    regions: ['Nigeria'],
+    description: 'Free, confidential crisis lines in Nigeria, checked and kept up to date.',
+  },
+  {
+    name: 'Samaritans',
+    phone: '116 123',
+    text: '',
+    url: 'https://www.samaritans.org',
+    regions: ['UK', 'Ireland'],
+    description: '24/7 free support for anyone struggling to cope.',
+  },
+  {
     name: '988 Suicide & Crisis Lifeline',
     phone: '988',
     text: 'Text 988',

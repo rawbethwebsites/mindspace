@@ -76,7 +76,7 @@ export default function Mood() {
                 <Icon
                   size={32}
                   className="transition-colors"
-                  style={{ color: selected === i ? moodColors[i] : 'var(--color-on-surface-subtle)' }}
+                  style={{ color: moodColors[i], opacity: selected === null || selected === i ? 1 : 0.45 }}
                   aria-hidden="true"
                 />
                 <span className={`text-xs font-medium ${selected === i ? 'text-[var(--color-on-surface)]' : 'text-[var(--color-on-surface-muted)]'}`}>{moodLabels[i]}</span>

@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { ConvexClientProvider } from './ConvexClientProvider.tsx'
+import '@fontsource-variable/inter'
 import './index.css'
 import App from './App.tsx'
 import Home from './pages/Home.tsx'
@@ -14,7 +14,6 @@ import Resources from './pages/Resources.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ConvexClientProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<App />}>
@@ -27,6 +26,5 @@ createRoot(document.getElementById('root')!).render(
           </Route>
         </Routes>
       </BrowserRouter>
-    </ConvexClientProvider>
   </StrictMode>,
 )

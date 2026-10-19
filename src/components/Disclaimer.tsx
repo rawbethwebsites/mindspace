@@ -1,4 +1,5 @@
 import { Heart, Shield } from 'lucide-react'
+import { AI_ENABLED } from '../lib/ai'
 
 export default function Disclaimer({ onAck }: { onAck: () => void }) {
   return (
@@ -23,7 +24,7 @@ export default function Disclaimer({ onAck }: { onAck: () => void }) {
                 <li>• Mindspace is <strong>not a replacement</strong> for professional therapy or medical care.</li>
                 <li>• This is a supportive companion, not a licensed therapist.</li>
                 <li>• If you're in crisis or having thoughts of self-harm, please contact a crisis hotline or emergency services.</li>
-                <li>• All your data stays on your device — nothing is sent to a server (except your AI messages).</li>
+                <li>• All your data stays on your device{AI_ENABLED ? ' — nothing is sent to a server (except your AI messages).' : '. Nothing is sent to a server.'}</li>
                 <li>• You can delete all your data at any time.</li>
               </ul>
             </div>
