@@ -1,4 +1,4 @@
-import { Outlet, NavLink } from 'react-router-dom'
+import { Outlet, NavLink, useLocation } from 'react-router-dom'
 import { Home, MessageCircle, BookOpen, Heart, Wind, Phone, AlertTriangle } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import Disclaimer from './components/Disclaimer'
@@ -14,7 +14,23 @@ const navItems = [
   { to: '/resources', label: 'Resources', icon: Phone },
 ].filter((item) => AI_ENABLED || item.to !== '/chat')
 
+// Shown once per launch: continues the native splash, then dissolves into the app.
+function LaunchVeil() {
+  const [show, setShow] = useState(() => {
+    try { return !sessionStorage.getItem('mindspace-launched') } catch { return true }
+  })
+  useEffect(() => {
+    if (!show) return
+    try { sessionStorage.setItem('mindspace-launched', '1') } catch { /* private mode */ }
+    const t = setTimeout(() => setShow(false), 1200)
+    return () => clearTimeout(t)
+  }, [show])
+  if (!show) return null
+  return <div className="launch-veil" aria-hidden="true"><img src="/mindspace-icon.png" alt="" /></div>
+}
+
 export default function App() {
+  const location = useLocation()
   const [showCrisis, setShowCrisis] = useState(false)
   const [acknowledged, setAcknowledged] = useState(false)
 
@@ -35,11 +51,12 @@ export default function App() {
   }, [])
 
   if (!acknowledged) {
-    return <Disclaimer onAck={handleAck} />
+    return <><LaunchVeil /><div className="page-enter"><Disclaimer onAck={handleAck} /></div></>
   }
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[var(--bg)] text-[var(--text)]">
+      <LaunchVeil />
       <a href="#main-content" className="skip-link">Skip to main content</a>
 
       <aside className="fixed bottom-0 left-0 right-0 md:bottom-auto md:right-auto md:w-64 md:min-h-screen md:top-0 bg-[rgba(17,25,35,0.96)] backdrop-blur-xl border-t md:border-t-0 md:border-r border-white/10 flex md:flex-col items-center md:items-stretch px-2 md:px-4 py-2 md:py-5 gap-1 md:gap-2 z-50">
@@ -60,12 +77,12 @@ export default function App() {
               className={({ isActive }) =>
                 `flex min-w-0 flex-1 flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 px-1 md:px-3 py-1.5 md:py-2.5 rounded-xl text-[10px] md:text-sm transition-all min-h-[50px] md:min-h-[44px] md:w-full ${
                   isActive
-                    ? 'bg-white/10 text-[#f5c56a] font-semibold md:shadow-[inset_3px_0_0_0_#f5c56a]'
+                    ? 'tab-active bg-white/10 text-[#f5c56a] font-semibold md:shadow-[inset_3px_0_0_0_#f5c56a]'
                     : 'font-medium text-white/55 hover:bg-white/8 hover:text-white'
                 }`
               }
             >
-              <item.icon size={18} aria-hidden="true" />
+              <item.icon size={18} aria-hidden="true" className="tab-icon" />
               <span>{item.label}</span>
             </NavLink>
           ))}
@@ -88,7 +105,7 @@ export default function App() {
         >
           <AlertTriangle size={20} aria-hidden="true" />
         </button>
-        <Outlet />
+        <div key={location.pathname} className="page-enter"><Outlet /></div>
       </main>
 
       <footer className="hidden md:block fixed bottom-0 left-64 right-0 bg-[rgba(244,241,235,0.9)] backdrop-blur-xl border-t border-[var(--color-border)] px-4 py-2 text-center text-[10px] text-[var(--color-on-surface-muted)] z-30">

@@ -217,6 +217,63 @@ button, a[role="button"], .touch-target { min-height: 44px; min-width: 44px; }
   .app-page { padding: 2.5rem 3rem 6rem; }
 }
 
+
+/* ═══ Motion system · calm/premium ═══
+   One signature curve (--ease-calm) for entrances, quick press-down, slower settle.
+   Speeds: quick 140ms (press), standard 360ms (state), slow 560ms (page/launch). */
+:root {
+  --ease-calm: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-std: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-pop: cubic-bezier(0.34, 1.45, 0.64, 1);
+  --t-quick: 140ms;
+  --t-std: 360ms;
+  --t-slow: 560ms;
+}
+
+@keyframes pageFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes moodPop { 0% { transform: scale(1); } 45% { transform: scale(1.22); } 100% { transform: scale(1.06); } }
+@keyframes savedPop { 0% { transform: scale(1); } 40% { transform: scale(1.035); } 100% { transform: scale(1); } }
+@keyframes veilOut { to { opacity: 0; visibility: hidden; } }
+@keyframes veilIcon { 0% { transform: none; } 100% { transform: translateY(-10px) scale(1.06); opacity: 0; } }
+@keyframes heroDrift { from { transform: scale(1.02) translateY(0); } to { transform: scale(1.08) translateY(-1.5%); } }
+@keyframes tabBump { 0% { transform: translateY(0); } 50% { transform: translateY(-3px) scale(1.1); } 100% { transform: translateY(-1px) scale(1.04); } }
+
+/* Page change: the page fades, its sections rise in one after another (micro cascade, <300ms total) */
+.page-enter { animation: pageFade var(--t-std) var(--ease-std) both; }
+.page-enter .app-page > div > * { animation: riseIn var(--t-slow) var(--ease-calm) both; }
+.page-enter .app-page > div > *:nth-child(2) { animation-delay: 50ms; }
+.page-enter .app-page > div > *:nth-child(3) { animation-delay: 100ms; }
+.page-enter .app-page > div > *:nth-child(4) { animation-delay: 150ms; }
+.page-enter .app-page > div > *:nth-child(5) { animation-delay: 200ms; }
+.page-enter .app-page > div > *:nth-child(n+6) { animation-delay: 240ms; }
+.rise-in { animation: riseIn var(--t-slow) var(--ease-calm) both; }
+
+/* Press: sink quickly, settle slowly */
+.btn-sunset, .btn-ghost, .card-hover, .press {
+  transition: transform var(--t-std) var(--ease-calm), background var(--t-std) var(--ease-std),
+    box-shadow var(--t-std) var(--ease-std), border-color var(--t-std) var(--ease-std), opacity var(--t-std) var(--ease-std);
+}
+.btn-sunset:active, .btn-ghost:active, .press:active { transform: scale(0.97); transition-duration: var(--t-quick); }
+.card-hover:active { transform: scale(0.985); box-shadow: var(--shadow-card); transition-duration: var(--t-quick); }
+
+/* Tab bar: the active icon lifts */
+.tab-icon { transition: transform var(--t-std) var(--ease-calm); }
+.tab-active .tab-icon { animation: tabBump var(--t-std) var(--ease-pop) both; }
+
+/* Mood check-in */
+.mood-pop { animation: moodPop var(--t-std) var(--ease-pop) both; }
+.saved-pop { animation: savedPop var(--t-std) var(--ease-calm); background: var(--color-success) !important; }
+
+/* Home hero: slow ambient drift */
+.hero-drift { animation: heroDrift 24s ease-in-out infinite alternate; transform-origin: 50% 60%; }
+
+/* Launch veil: picks up from the native splash and dissolves into the app */
+.launch-veil { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center;
+  background: #f4f1eb; animation: veilOut var(--t-slow) var(--ease-std) 520ms both; pointer-events: none; }
+.launch-veil img { width: 104px; height: 104px; border-radius: 24px; box-shadow: 0 18px 40px rgba(189, 65, 35, 0.22);
+  animation: veilIcon var(--t-slow) var(--ease-std) 460ms both; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important;

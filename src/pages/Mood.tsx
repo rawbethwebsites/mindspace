@@ -74,8 +74,9 @@ export default function Mood() {
                 }`}
               >
                 <Icon
+                  key={selected === i ? 'on' : 'off'}
                   size={32}
-                  className="transition-colors"
+                  className={`transition-colors ${selected === i ? 'mood-pop' : ''}`}
                   style={{ color: moodColors[i], opacity: selected === null || selected === i ? 1 : 0.45 }}
                   aria-hidden="true"
                 />
@@ -98,7 +99,7 @@ export default function Mood() {
             onClick={handleSave}
             disabled={selected === null}
             aria-label={todaySet ? 'Update mood check-in' : 'Save mood check-in'}
-            className="btn-sunset w-full py-3 disabled:opacity-40 disabled:cursor-not-allowed min-h-[44px]"
+            className={`btn-sunset w-full py-3 disabled:opacity-40 disabled:cursor-not-allowed min-h-[44px] ${saved ? 'saved-pop' : ''}`}
           >
             {saved ? '✓ Saved' : todaySet ? 'Update check-in' : 'Save check-in'}
           </button>

@@ -56,7 +56,7 @@ export default function Home() {
         </div>
 
         <section className="relative min-h-[440px] md:min-h-[470px] rounded-[24px] overflow-hidden shadow-[var(--shadow-elevated)] fade-in mb-8">
-          <img src="/mindspace-sunrise.jpg" alt="Sunrise over a quiet valley and winding river" className="absolute inset-0 h-full w-full object-cover" />
+          <img src="/mindspace-sunrise.jpg" alt="Sunrise over a quiet valley and winding river" className="hero-drift absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,245,223,0.92)_0%,rgba(255,245,223,0.58)_42%,rgba(17,25,35,0.12)_72%,rgba(17,25,35,0.65)_100%)] md:bg-[linear-gradient(90deg,rgba(255,245,223,0.94)_0%,rgba(255,245,223,0.62)_42%,rgba(255,245,223,0.08)_70%)]" aria-hidden="true" />
 
           <div className="relative z-10 flex min-h-[440px] md:min-h-[470px] flex-col p-6 md:p-10">
