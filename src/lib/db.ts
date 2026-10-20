@@ -13,6 +13,22 @@ interface MindspaceDB extends DBSchema {
     key: string
     value: { id: string; title: string; body: string; reflection?: string; createdAt: number; updatedAt: number }
   }
+  letters: {
+    key: string
+    value: { id: string; body: string; createdAt: number }
+  }
+  wins: {
+    key: string
+    value: { id: string; text: string; createdAt: number }
+  }
+  memories: {
+    key: string
+    value: { id: string; fact: string; createdAt: number; enabled: boolean }
+  }
+  appState: {
+    key: string
+    value: { key: string; value: number }
+  }
 }
 
 export interface ChatMessage {
@@ -32,11 +48,15 @@ let dbPromise: Promise<IDBPDatabase<MindspaceDB>> | null = null
 
 function getDB() {
   if (!dbPromise) {
-    dbPromise = openDB<MindspaceDB>('mindspace', 1, {
+    dbPromise = openDB<MindspaceDB>('mindspace', 2, {
       upgrade(db) {
         if (!db.objectStoreNames.contains('chats')) db.createObjectStore('chats', { keyPath: 'id' })
         if (!db.objectStoreNames.contains('moods')) db.createObjectStore('moods', { keyPath: 'id' })
         if (!db.objectStoreNames.contains('journal')) db.createObjectStore('journal', { keyPath: 'id' })
+        if (!db.objectStoreNames.contains('letters')) db.createObjectStore('letters', { keyPath: 'id' })
+        if (!db.objectStoreNames.contains('wins')) db.createObjectStore('wins', { keyPath: 'id' })
+        if (!db.objectStoreNames.contains('memories')) db.createObjectStore('memories', { keyPath: 'id' })
+        if (!db.objectStoreNames.contains('appState')) db.createObjectStore('appState', { keyPath: 'key' })
       },
     })
   }
@@ -122,16 +142,128 @@ export async function clearAllData() {
   await db.clear('chats')
   await db.clear('moods')
   await db.clear('journal')
+  await db.clear('letters')
+  await db.clear('wins')
+  await db.clear('memories')
+  await db.clear('appState')
+}
+
+// ─── Letter to future you ───────────────────────────────────────────────────
+
+export interface StoredLetter {
+  id: string
+  body: string
+  createdAt: number
+}
+
+export async function saveLetter(body: string) {
+  const db = await getDB()
+  const id = `letter-${Date.now()}`
+  await db.put('letters', { id, body, createdAt: Date.now() })
+  return id
+}
+
+export async function getLetters(): Promise<StoredLetter[]> {
+  const db = await getDB()
+  const all = await db.getAll('letters')
+  return all.sort((a, b) => a.createdAt - b.createdAt)
+}
+
+export async function deleteLetter(id: string) {
+  const db = await getDB()
+  await db.delete('letters', id)
+}
+
+const letterSeenKey = (letterId: string) => `letter-seen-${letterId}`
+
+export async function getLetterSeenAt(letterId: string): Promise<number | null> {
+  const db = await getDB()
+  const row = await db.get('appState', letterSeenKey(letterId))
+  return row ? row.value : null
+}
+
+export async function markLetterSeen(letterId: string) {
+  const db = await getDB()
+  await db.put('appState', { key: letterSeenKey(letterId), value: Date.now() })
+}
+
+// ─── Wins jar ───────────────────────────────────────────────────────────────
+
+export interface StoredWin {
+  id: string
+  text: string
+  createdAt: number
+}
+
+export async function addWin(text: string) {
+  const db = await getDB()
+  const id = `win-${Date.now()}`
+  await db.put('wins', { id, text, createdAt: Date.now() })
+  return id
+}
+
+export async function getWins(): Promise<StoredWin[]> {
+  const db = await getDB()
+  const all = await db.getAll('wins')
+  return all.sort((a, b) => b.createdAt - a.createdAt)
+}
+
+export async function deleteWin(id: string) {
+  const db = await getDB()
+  await db.delete('wins', id)
+}
+
+// ─── Memories (what your companion remembers) ────────────────────────────────
+
+export interface StoredMemory {
+  id: string
+  fact: string
+  createdAt: number
+  enabled: boolean
+}
+
+export async function saveMemory(fact: string) {
+  const db = await getDB()
+  const id = `memory-${Date.now()}`
+  await db.put('memories', { id, fact, createdAt: Date.now(), enabled: true })
+  return id
+}
+
+export async function getMemories(): Promise<StoredMemory[]> {
+  const db = await getDB()
+  const all = await db.getAll('memories')
+  return all.sort((a, b) => a.createdAt - b.createdAt)
+}
+
+export async function updateMemory(id: string, fact: string, enabled: boolean) {
+  const db = await getDB()
+  const existing = await db.get('memories', id)
+  if (existing) {
+    await db.put('memories', { ...existing, fact, enabled })
+  }
+}
+
+export async function deleteMemory(id: string) {
+  const db = await getDB()
+  await db.delete('memories', id)
+}
+
+export async function clearMemories() {
+  const db = await getDB()
+  await db.clear('memories')
 }
 
 // Export all data
 export async function exportAllData() {
-  const [chats, moods, journal] = await Promise.all([
+  const [chats, moods, journal, letters, wins, memories] = await Promise.all([
     getAllConversations(),
     getMoods(),
     getJournalEntries(),
+    getLetters(),
+    getWins(),
+    getMemories(),
   ])
-  return { chats, moods, journal, exportedAt: new Date().toISOString() }
+  return { chats, moods, journal, letters, wins, memories, exportedAt: new Date().toISOString() }
 }
 // Screenshot builds only (VITE_DEMO_SEED=true): fill two weeks of sample check-ins and a few entries.
 export async function seedDemoData() {
