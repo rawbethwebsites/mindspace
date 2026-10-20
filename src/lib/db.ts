@@ -31,6 +31,14 @@ interface MindspaceDB extends DBSchema {
     key: string
     value: { key: string; value: number }
   }
+  trustedPeople: {
+    key: string
+    value: { id: string; name: string; phone: string; createdAt: number }
+  }
+  activityLog: {
+    key: string
+    value: { id: string; kind: string; ts: number; meta?: Record<string, string | number> }
+  }
 }
 
 export interface ChatMessage {
@@ -50,7 +58,7 @@ let dbPromise: Promise<IDBPDatabase<MindspaceDB>> | null = null
 
 function getDB() {
   if (!dbPromise) {
-    dbPromise = openDB<MindspaceDB>('mindspace', 2, {
+    dbPromise = openDB<MindspaceDB>('mindspace', 3, {
       upgrade(db) {
         if (!db.objectStoreNames.contains('chats')) db.createObjectStore('chats', { keyPath: 'id' })
         if (!db.objectStoreNames.contains('moods')) db.createObjectStore('moods', { keyPath: 'id' })
@@ -59,6 +67,8 @@ function getDB() {
         if (!db.objectStoreNames.contains('wins')) db.createObjectStore('wins', { keyPath: 'id' })
         if (!db.objectStoreNames.contains('memories')) db.createObjectStore('memories', { keyPath: 'id' })
         if (!db.objectStoreNames.contains('appState')) db.createObjectStore('appState', { keyPath: 'key' })
+        if (!db.objectStoreNames.contains('trustedPeople')) db.createObjectStore('trustedPeople', { keyPath: 'id' })
+        if (!db.objectStoreNames.contains('activityLog')) db.createObjectStore('activityLog', { keyPath: 'id' })
       },
     })
   }
@@ -151,6 +161,8 @@ export async function clearAllData() {
   await db.clear('wins')
   await db.clear('memories')
   await db.clear('appState')
+  await db.clear('trustedPeople')
+  await db.clear('activityLog')
 }
 
 // ─── Letter to future you ───────────────────────────────────────────────────
@@ -260,6 +272,55 @@ export async function clearMemories() {
   const db = await getDB()
   await db.clear('memories')
   window.dispatchEvent(new CustomEvent('memories-changed'))
+}
+
+// Trusted people (Quiet Signal) — stored on the phone only, never sent anywhere.
+export interface TrustedPerson {
+  id: string
+  name: string
+  phone: string
+  createdAt: number
+}
+
+export async function getTrustedPeople() {
+  const db = await getDB()
+  const all = await db.getAll('trustedPeople')
+  return all.sort((a, b) => a.createdAt - b.createdAt)
+}
+
+export async function saveTrustedPerson(id: string, name: string, phone: string) {
+  const db = await getDB()
+  const existing = await db.get('trustedPeople', id)
+  await db.put('trustedPeople', { id, name, phone, createdAt: existing?.createdAt || Date.now() })
+}
+
+export async function deleteTrustedPerson(id: string) {
+  const db = await getDB()
+  await db.delete('trustedPeople', id)
+}
+
+// Activity log — lightweight local events (breathing sessions, heart checks) used
+// by "how often they used breathing" and the 14-day summary. Only ids/kinds/times,
+// never content.
+export interface ActivityEvent {
+  id: string
+  kind: string
+  ts: number
+  meta?: Record<string, string | number>
+}
+
+export async function logActivity(kind: string, meta?: Record<string, string | number>) {
+  try {
+    const db = await getDB()
+    await db.put('activityLog', { id: `${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, kind, ts: Date.now(), meta })
+  } catch { /* logging must never break a feature */ }
+}
+
+export async function getActivities(sinceMs?: number) {
+  const db = await getDB()
+  const all = await db.getAll('activityLog')
+  const sorted = all.sort((a, b) => a.ts - b.ts)
+  return sinceMs === undefined ? sorted : sorted.filter((e) => e.ts >= sinceMs)
 }
 
 // Export all data

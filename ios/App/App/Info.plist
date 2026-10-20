@@ -47,5 +47,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Mindspace uses the rear camera to estimate your heart rate after breathing exercises. Nothing is recorded or saved — only a momentary estimate on your device.</string>
 </dict>
 </plist>
