@@ -1,4 +1,5 @@
 import { SYSTEM_PROMPT, JOURNAL_REFLECTION_PROMPT } from './prompts'
+import { getCompanion } from './companions'
 
 const API_BASE = import.meta.env.VITE_MINDSPACE_API_BASE || ''
 
@@ -12,9 +13,11 @@ interface Message {
 
 export async function* streamChat(
   messages: Message[],
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  companionId?: string
 ): AsyncGenerator<string> {
-  const systemMessage: Message = { role: 'system', content: SYSTEM_PROMPT }
+  const companion = getCompanion(companionId)
+  const systemMessage: Message = { role: 'system', content: `${SYSTEM_PROMPT}\n\n## Your voice\n\n${companion.voice}\nIf asked, your name is ${companion.name}. Keep the same safety rules above whatever your voice.` }
   const fullMessages = [systemMessage, ...messages.slice(-10)]
 
   const res = await fetch(`${API_BASE}/api/chat`, {

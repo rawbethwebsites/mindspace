@@ -1,8 +1,27 @@
 import { useState, useRef, useEffect } from 'react'
-import { Plus, MessageCircle, Trash2, LifeBuoy, History, ArrowUp } from 'lucide-react'
+import { Plus, MessageCircle, Trash2, LifeBuoy, History, ArrowUp, ChevronDown, Check } from 'lucide-react'
 import { streamChat, checkOllamaConnection } from '../lib/ai'
 import { detectCrisis } from '../lib/crisis'
 import { saveConversation, getAllConversations, deleteConversation, type ChatMessage } from '../lib/db'
+import { companions, getCompanion, loadCompanionId, saveCompanionId, type Companion } from '../lib/companions'
+
+// Replies may use **bold**; show it as bold instead of raw asterisks (text only, no HTML).
+function RichText({ text }: { text: string }) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g)
+  return <>{parts.map((p, i) => (p.startsWith('**') && p.endsWith('**') && p.length > 4 ? <strong key={i} className="font-semibold">{p.slice(2, -2)}</strong> : <span key={i}>{p}</span>))}</>
+}
+
+function CompanionAvatar({ c, size = 36 }: { c: Companion; size?: number }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="shrink-0 rounded-full flex items-center justify-center font-bold text-white"
+      style={{ width: size, height: size, fontSize: size * 0.42, background: `linear-gradient(135deg, ${c.colors[0]}, ${c.colors[1]})` }}
+    >
+      {c.name[0]}
+    </span>
+  )
+}
 
 export default function Chat() {
   const [conversations, setConversations] = useState<{ id: string; title: string; createdAt: number }[]>([])
@@ -13,6 +32,20 @@ export default function Chat() {
   const [streamContent, setStreamContent] = useState('')
   const [showConvList, setShowConvList] = useState(false)
   const [online, setOnline] = useState<boolean | null>(null)
+  const [companionId, setCompanionId] = useState<string>(() => getCompanion(loadCompanionId()).id)
+  const [showPicker, setShowPicker] = useState(false)
+  const companion = getCompanion(companionId)
+
+  const chooseCompanion = (id: string) => {
+    if (id !== companionId && messages.length > 0) {
+      // A new voice starts a fresh conversation; the old one stays in history.
+      setActiveId(null)
+      setMessages([])
+    }
+    setCompanionId(id)
+    saveCompanionId(id)
+    setShowPicker(false)
+  }
   const abortRef = useRef<AbortController | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -82,7 +115,7 @@ export default function Chat() {
       let fullContent = ''
       const aiMessages = newMessages.map(m => ({ role: m.role, content: m.content }))
 
-      for await (const chunk of streamChat(aiMessages, abortRef.current.signal)) {
+      for await (const chunk of streamChat(aiMessages, abortRef.current.signal, companionId)) {
         fullContent += chunk
         setStreamContent(fullContent)
       }
@@ -98,7 +131,7 @@ export default function Chat() {
       setStreamContent('')
 
       const title = newMessages[0].content.slice(0, 50) + (newMessages[0].content.length > 50 ? '...' : '')
-      await saveConversation(convId, title, finalMessages)
+      await saveConversation(convId, title, finalMessages, companionId)
       loadConversations()
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
@@ -131,6 +164,7 @@ export default function Chat() {
     if (conv) {
       setActiveId(id)
       setMessages(conv.messages)
+      if (conv.companion) setCompanionId(getCompanion(conv.companion).id)
       setShowConvList(false)
     }
   }
@@ -176,14 +210,18 @@ export default function Chat() {
           <button onClick={() => setShowConvList(!showConvList)} aria-label="Your conversations" className="press md:hidden text-[var(--color-on-surface-muted)] min-w-[44px] min-h-[44px] rounded-xl flex items-center justify-center">
             <History size={20} aria-hidden="true" />
           </button>
-          <img src="/mindspace-icon.png" alt="" aria-hidden="true" className="w-9 h-9 rounded-[11px] shrink-0" />
-          <div className="min-w-0 flex-1">
-            <h2 className="font-semibold text-[15px] leading-tight text-[var(--color-on-surface)] truncate">Mindspace</h2>
-            <p className="flex items-center gap-1.5 text-xs text-[var(--color-on-surface-muted)]" role="status">
-              <span className={`w-1.5 h-1.5 rounded-full ${online === false ? 'bg-[var(--color-on-surface-subtle)]' : 'bg-[var(--color-success)]'}`} aria-hidden="true" />
-              {online === false ? 'Resting right now' : 'Here for you'}
-            </p>
-          </div>
+          <button onClick={() => setShowPicker(true)} aria-label={`Talking with ${companion.name}. Change companion`} className="press min-w-0 flex-1 flex items-center gap-2.5 text-left rounded-xl py-0.5">
+            <span key={companion.id} className="swap-in"><CompanionAvatar c={companion} size={38} /></span>
+            <span className="min-w-0">
+              <span className="flex items-center gap-1 font-semibold text-[15px] leading-tight text-[var(--color-on-surface)]">
+                {companion.name} <ChevronDown size={14} className="text-[var(--color-on-surface-muted)]" aria-hidden="true" />
+              </span>
+              <span className="flex items-center gap-1.5 text-xs text-[var(--color-on-surface-muted)] truncate" role="status">
+                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${online === false ? 'bg-[var(--color-on-surface-subtle)]' : 'bg-[var(--color-success)]'}`} aria-hidden="true" />
+                {online === false ? 'Resting right now' : companion.tagline}
+              </span>
+            </span>
+          </button>
           <button
             onClick={() => window.dispatchEvent(new CustomEvent('show-crisis'))}
             aria-label="Get help now"
@@ -196,11 +234,33 @@ export default function Chat() {
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-4 pt-5 pb-3 space-y-3 max-w-3xl mx-auto w-full">
           {messages.length === 0 && !streaming && (
-            <div className="text-center pt-10 pb-6">
-              <img src="/mindspace-icon.png" alt="" aria-hidden="true" className="chat-sun w-[76px] h-[76px] rounded-[22px] mx-auto mb-5" />
-              <h3 className="text-[22px] font-bold tracking-tight text-[var(--color-on-surface)] mb-2">What's on your mind?</h3>
-              <p className="text-[15px] leading-relaxed text-[var(--color-on-surface-muted)] max-w-xs mx-auto mb-7">Say it the way it comes. No judgment, and it stays between you and Mindspace.</p>
-              <div className="flex flex-col gap-2 max-w-xs mx-auto">
+            <div className="pt-4 pb-6">
+              <h3 className="text-[22px] font-bold tracking-tight text-[var(--color-on-surface)] text-center mb-1">Who would you like to talk to?</h3>
+              <p className="text-sm text-[var(--color-on-surface-muted)] text-center mb-4">Same care, different styles. You can switch any time.</p>
+              <div className="companion-row -mx-4 px-4 flex gap-2.5 overflow-x-auto pb-2 mb-5" role="radiogroup" aria-label="Choose a companion">
+                {companions.map((c, i) => (
+                  <button
+                    key={c.id}
+                    role="radio"
+                    aria-checked={c.id === companionId}
+                    onClick={() => chooseCompanion(c.id)}
+                    style={{ animationDelay: `${i * 45}ms` }}
+                    className={`rise-in press shrink-0 w-[132px] text-left rounded-2xl p-3 border bg-[var(--color-surface)] ${c.id === companionId ? 'border-[var(--color-primary)] shadow-[0_0_0_3px_rgba(217,84,43,.12)]' : 'border-[var(--color-border)]'}`}
+                  >
+                    <CompanionAvatar c={c} size={40} />
+                    <span className="block mt-2 font-semibold text-[15px] text-[var(--color-on-surface)]">{c.name}</span>
+                    <span className="block text-xs text-[var(--color-on-surface-muted)] leading-snug">{c.tagline}</span>
+                  </button>
+                ))}
+              </div>
+              <div key={companion.id} className="msg-in flex items-end gap-2 mb-5">
+                <CompanionAvatar c={companion} size={28} />
+                <div className="max-w-[80%] px-4 py-2.5 rounded-[20px] rounded-bl-md bg-[var(--color-surface)] border border-[var(--color-border)] text-[15px] leading-relaxed text-[var(--color-on-surface)]">
+                  {companion.opener}
+                  <span className="block mt-1.5 text-xs text-[var(--color-on-surface-muted)]">{companion.approach}</span>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2 max-w-xs ml-9">
                 {suggestions.map((s, i) => (
                   <button
                     key={s}
@@ -222,18 +282,18 @@ export default function Chat() {
               </div>
             ) : (
               <div key={i} className="flex items-end gap-2 msg-in">
-                <img src="/mindspace-icon.png" alt="" aria-hidden="true" className="w-7 h-7 rounded-lg shrink-0 mb-0.5" />
-                <div className="max-w-[80%] px-4 py-2.5 rounded-[20px] rounded-bl-md bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-on-surface)] text-[15px] leading-relaxed whitespace-pre-wrap">{msg.content}</div>
+                <span className="mb-0.5"><CompanionAvatar c={companion} size={28} /></span>
+                <div className="max-w-[80%] px-4 py-2.5 rounded-[20px] rounded-bl-md bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-on-surface)] text-[15px] leading-relaxed whitespace-pre-wrap"><RichText text={msg.content} /></div>
               </div>
             )
           ))}
 
           {streaming && (
             <div className="flex items-end gap-2 msg-in">
-              <img src="/mindspace-icon.png" alt="" aria-hidden="true" className="w-7 h-7 rounded-lg shrink-0 mb-0.5" />
+              <span className="mb-0.5"><CompanionAvatar c={companion} size={28} /></span>
               <div className="max-w-[80%] px-4 py-2.5 rounded-[20px] rounded-bl-md bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-on-surface)] text-[15px] leading-relaxed whitespace-pre-wrap">
-                {streamContent || (
-                  <span className="typing-dots" role="status" aria-label="Mindspace is thinking"><i /><i /><i /></span>
+                {streamContent ? <RichText text={streamContent} /> : (
+                  <span className="typing-dots" role="status" aria-label={`${companion.name} is thinking`}><i /><i /><i /></span>
                 )}
               </div>
             </div>
@@ -276,6 +336,28 @@ export default function Chat() {
           </div>
         </div>
       </div>
+      {showPicker && (
+        <div className="fixed inset-0 z-[70] flex items-end md:items-center justify-center" role="dialog" aria-modal="true" aria-label="Choose a companion">
+          <button aria-label="Close" onClick={() => setShowPicker(false)} className="absolute inset-0 bg-black/30 fade-in" />
+          <div className="sheet-in relative w-full md:max-w-md bg-[var(--color-surface)] rounded-t-[28px] md:rounded-[28px] p-5" style={{ paddingBottom: 'calc(1.25rem + env(safe-area-inset-bottom))' }}>
+            <div className="w-10 h-1 rounded-full bg-[var(--color-border)] mx-auto mb-4 md:hidden" aria-hidden="true" />
+            <h3 className="text-lg font-bold text-[var(--color-on-surface)] mb-3">Talk with</h3>
+            <div className="space-y-1.5">
+              {companions.map((c) => (
+                <button key={c.id} onClick={() => chooseCompanion(c.id)} className={`press w-full flex items-center gap-3 p-3 rounded-2xl text-left ${c.id === companionId ? 'bg-[var(--color-primary)]/10' : ''}`}>
+                  <CompanionAvatar c={c} size={44} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-semibold text-[var(--color-on-surface)]">{c.name} <span className="font-normal text-[var(--color-on-surface-muted)]">· {c.tagline}</span></span>
+                    <span className="block text-[13px] text-[var(--color-on-surface-muted)] leading-snug">{c.approach}</span>
+                  </span>
+                  {c.id === companionId && <Check size={18} className="text-[var(--color-primary)] shrink-0" aria-label="Current" />}
+                </button>
+              ))}
+            </div>
+            {messages.length > 0 && <p className="text-xs text-[var(--color-on-surface-muted)] mt-3">Switching starts a new conversation. This one stays in your history.</p>}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

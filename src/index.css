@@ -322,6 +322,11 @@ button, a[role="button"], .touch-target { min-height: 44px; min-width: 44px; }
 @keyframes drawerIn { from { transform: translateX(-100%); } to { transform: none; } }
 .drawer-in { animation: drawerIn 420ms var(--ease-calm) both; }
 
+@keyframes sheetIn { from { transform: translateY(100%); } to { transform: none; } }
+.sheet-in { animation: sheetIn 460ms var(--ease-calm) both; }
+.companion-row { scrollbar-width: none; scroll-snap-type: x proximity; } .companion-row::-webkit-scrollbar { display: none; }
+.companion-row > * { scroll-snap-align: start; }
+
 /* First-launch logo: the tile settles, the sun rises over the horizon, the lines draw out, the name follows */
 .intro { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center;
   background: #f4f1eb; pointer-events: none; animation: veilOut 520ms var(--ease-std) 1950ms both; }

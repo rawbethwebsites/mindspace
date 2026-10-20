@@ -3,7 +3,7 @@ import { openDB, type DBSchema, type IDBPDatabase } from 'idb'
 interface MindspaceDB extends DBSchema {
   chats: {
     key: string
-    value: { id: string; title: string; createdAt: number; messages: ChatMessage[] }
+    value: { id: string; title: string; createdAt: number; messages: ChatMessage[]; companion?: string }
   }
   moods: {
     key: string
@@ -44,10 +44,10 @@ function getDB() {
 }
 
 // Chat functions
-export async function saveConversation(id: string, title: string, messages: ChatMessage[]) {
+export async function saveConversation(id: string, title: string, messages: ChatMessage[], companion?: string) {
   const db = await getDB()
   const existing = await db.get('chats', id)
-  await db.put('chats', { id, title, createdAt: existing?.createdAt || Date.now(), messages })
+  await db.put('chats', { id, title, createdAt: existing?.createdAt || Date.now(), messages, companion: companion ?? existing?.companion })
 }
 
 export async function getConversation(id: string) {
