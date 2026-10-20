@@ -277,7 +277,7 @@ export function createBrain(canvas: HTMLCanvasElement, opts: Opts = {}): BrainWo
     const cv = document.createElement('canvas')
     cv.width = 640; cv.height = 140
     const g = cv.getContext('2d')!
-    g.font = '600 50px "Space Grotesk", system-ui, sans-serif'
+    g.font = '600 50px "Bricolage Grotesque Variable", system-ui, sans-serif'
     g.fillStyle = '#f7efe6'
     g.fillText(r.name, 8, 58)
     g.font = '400 30px "JetBrains Mono", ui-monospace, monospace'

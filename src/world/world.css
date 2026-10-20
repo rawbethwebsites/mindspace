@@ -1,5 +1,5 @@
 /* Mindspace World: always the dark, cinematic look regardless of the app's chosen look. */
-.world { --region: #f2bd5b; position: relative; color: #f7efe6; font-family: 'Space Grotesk', 'Inter Variable', system-ui, sans-serif; min-height: 100vh;
+.world { --region: #f2bd5b; position: relative; color: #f7efe6; font-family: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', -apple-system, sans-serif; min-height: 100vh;
   background: radial-gradient(120% 80% at 60% 35%, #141a33 0%, #0a0d1c 55%, #05060d 100%) fixed #05060d; }
 .world-canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; opacity: 0; transition: opacity 1.4s ease; touch-action: pan-y; cursor: grab; }
 .world-canvas.on { opacity: 1; }
@@ -36,7 +36,7 @@
 .world-fact { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.1); font-size: 13px; line-height: 1.5; color: rgba(247,239,230,.66); }
 .world-fact span { display: block; margin-bottom: 4px; font: 500 10px/1 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .18em; text-transform: uppercase; color: rgba(247,239,230,.45); }
 .world-open { margin-top: 16px; min-height: 44px; padding: 0 18px; border-radius: 999px; font-size: 15px; font-weight: 600; color: #0b0d18; background: var(--region); transition: background .6s ease; }
-.world-title { font-weight: 400; font-size: clamp(34px, 8.5vw, 64px); line-height: 1.02; letter-spacing: -.03em; margin: 10px 0 10px; }
+.world-title { font-weight: 330; font-stretch: 84%; font-size: clamp(34px, 8.5vw, 64px); line-height: 1.02; letter-spacing: -.03em; margin: 10px 0 10px; }
 .world-ch.first .world-title { font-size: clamp(46px, 13vw, 96px); }
 .world-body { font-size: 16px; line-height: 1.55; color: rgba(247,239,230,.82); }
 .world-hint { margin-top: 26px; font-size: 13px; letter-spacing: .2em; color: rgba(247,239,230,.6); animation: worldHint 2.4s ease-in-out infinite; }
