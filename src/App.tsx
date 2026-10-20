@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Disclaimer from './components/Disclaimer'
 import CrisisAlert from './components/CrisisAlert'
 import LookPicker from './components/LookPicker'
+import { globalHelpers } from './features'
 import { AI_ENABLED } from './lib/ai'
 
 const navItems = [
@@ -112,6 +113,7 @@ export default function App() {
     <div className="app-root min-h-screen flex flex-col md:flex-row bg-[var(--bg)] text-[var(--text)]">
       <LaunchVeil />
       <LookPicker />
+      {globalHelpers.map((G, i) => <G key={i} />)}
       <div className="status-shield" aria-hidden="true" />
       <a href="#main-content" className="skip-link">Skip to main content</a>
 

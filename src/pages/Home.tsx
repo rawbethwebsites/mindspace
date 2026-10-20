@@ -75,6 +75,7 @@ export default function Home() {
             <p className="page-kicker mb-1.5">Your space</p>
             <h2 className="text-2xl font-bold text-[var(--text)]">What do you need today?</h2>
           </div>
+          <Link to="/tools" className="press shrink-0 text-sm font-semibold text-[var(--color-primary)] min-h-[44px] flex items-center gap-1">All tools <ArrowRight size={15} aria-hidden="true" /></Link>
         </div>
 
         <div className="grid md:grid-cols-3 gap-4 mb-8">

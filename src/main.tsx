@@ -21,6 +21,9 @@ import Journal from './pages/Journal.tsx'
 import Mood from './pages/Mood.tsx'
 import Exercises from './pages/Exercises.tsx'
 import Resources from './pages/Resources.tsx'
+import Tools from './pages/Tools.tsx'
+import Settings from './pages/Settings.tsx'
+import { features } from './features'
 
 if (import.meta.env.VITE_DEMO_SEED === 'true') {
   localStorage.setItem('mindspace-ack', 'true')
@@ -47,6 +50,9 @@ createRoot(document.getElementById('root')!).render(
             <Route path="mood" element={<Mood />} />
             <Route path="exercises" element={<Exercises />} />
             <Route path="resources" element={<Resources />} />
+            <Route path="tools" element={<Tools />} />
+            <Route path="settings" element={<Settings />} />
+            {features.map((f) => <Route key={f.id} path={f.route.replace(/^\//, '')} element={f.element} />)}
           </Route>
         </Routes>
       </BrowserRouter>
