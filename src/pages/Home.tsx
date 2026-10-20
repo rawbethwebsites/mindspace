@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
+import LookHero from '../components/LookHero'
+import { loadLook, type LookId } from '../lib/theme'
 import { AI_ENABLED } from '../lib/ai'
 import { Link } from 'react-router-dom'
-import { MessageCircle, BookOpen, Heart, Sparkles, Wind, Brain, Calendar, ArrowRight } from 'lucide-react'
+import { MessageCircle, BookOpen, Heart, Sparkles, Wind, Brain, ArrowRight, Palette } from 'lucide-react'
 import { getMoods, getTodayMood, localDay } from '../lib/db'
 
 const moodLabels = ['Struggling', 'Low', 'Okay', 'Good', 'Great']
@@ -11,6 +13,14 @@ export default function Home() {
   const [todayMood, setTodayMood] = useState<number | null>(null)
   const [streak, setStreak] = useState(0)
   const [recentMoods, setRecentMoods] = useState<{ date: string; mood: number }[]>([])
+  const [allMoods, setAllMoods] = useState<{ date: string; mood: number }[]>([])
+  const [look, setLook] = useState<LookId>(loadLook())
+
+  useEffect(() => {
+    const on = (e: Event) => setLook((e as CustomEvent<LookId>).detail)
+    window.addEventListener('look-change', on)
+    return () => window.removeEventListener('look-change', on)
+  }, [])
 
   const loadData = async () => {
     const today = await getTodayMood()
@@ -18,6 +28,7 @@ export default function Home() {
 
     const allMoods = await getMoods()
     setRecentMoods(allMoods.slice(-7))
+    setAllMoods(allMoods.slice(-14))
 
     let s = 0
     const moodDates = new Set(allMoods.map(m => m.date))
@@ -48,45 +59,16 @@ export default function Home() {
       <div className="max-w-6xl mx-auto">
         <div className="md:hidden flex items-center gap-3 mb-5">
           <img src="/mindspace-icon.png" alt="" aria-hidden="true" className="w-10 h-10 rounded-xl shadow-sm" />
-          <div>
+          <div className="flex-1">
             <p className="font-bold text-[var(--text)] leading-tight">Mindspace</p>
             <p className="text-xs text-[var(--text-muted)]">A quiet place for you</p>
           </div>
+          <button onClick={() => window.dispatchEvent(new CustomEvent('open-looks'))} aria-label="Change look" className="press min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center border border-[var(--border)] text-[var(--text)]">
+            <Palette size={18} aria-hidden="true" />
+          </button>
         </div>
 
-        <section className="relative min-h-[440px] md:min-h-[470px] rounded-[24px] overflow-hidden shadow-[var(--shadow-elevated)] fade-in mb-8">
-          <img src="/mindspace-sunrise.jpg" alt="Sunrise over a quiet valley and winding river" className="hero-drift absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,245,223,0.92)_0%,rgba(255,245,223,0.58)_42%,rgba(17,25,35,0.12)_72%,rgba(17,25,35,0.65)_100%)] md:bg-[linear-gradient(90deg,rgba(255,245,223,0.94)_0%,rgba(255,245,223,0.62)_42%,rgba(255,245,223,0.08)_70%)]" aria-hidden="true" />
-
-          <div className="relative z-10 flex min-h-[440px] md:min-h-[470px] flex-col p-6 md:p-10">
-            <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.08em] text-[var(--color-primary)] mb-3">
-              <Calendar size={14} aria-hidden="true" />
-              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-            </p>
-            <h1 className="max-w-xl text-[2.2rem] md:text-5xl font-bold leading-[1.04] text-[var(--bg-deep)]">{greeting}.</h1>
-            <p className="mt-3 max-w-md text-sm md:text-base text-[#3f4a52]">Take one small moment for yourself. {AI_ENABLED ? 'Check in, write it out, or talk through what is on your mind.' : 'Check in, write it out, or take a minute to breathe.'}</p>
-
-            <Link to={AI_ENABLED ? '/chat' : '/mood'} className="mt-6 btn-sunset inline-flex w-fit items-center justify-center gap-2 px-5 py-3 text-sm">
-              <MessageCircle size={17} aria-hidden="true" />
-              {AI_ENABLED ? 'Start a conversation' : 'Check in with yourself'}
-            </Link>
-
-            <div className="mt-auto grid grid-cols-3 overflow-hidden rounded-2xl border border-white/35 bg-[rgba(17,25,35,0.82)] text-white backdrop-blur-md">
-              <Link to="/mood" className="min-w-0 px-3 py-3.5 md:px-5 border-r border-white/10 hover:bg-white/8 transition-colors">
-                <span className="block text-[10px] uppercase font-bold tracking-[0.07em] text-white/55">Mood</span>
-                <span className="mt-1 block truncate text-sm font-semibold">{todayMood !== null ? moodLabels[todayMood] : 'Check in'}</span>
-              </Link>
-              <div className="min-w-0 px-3 py-3.5 md:px-5 border-r border-white/10">
-                <span className="block text-[10px] uppercase font-bold tracking-[0.07em] text-white/55">Streak</span>
-                <span className="mt-1 block text-sm font-semibold">{streak} {streak === 1 ? 'day' : 'days'}</span>
-              </div>
-              <Link to="/exercises" className="min-w-0 px-3 py-3.5 md:px-5 hover:bg-white/8 transition-colors">
-                <span className="block text-[10px] uppercase font-bold tracking-[0.07em] text-white/55">For today</span>
-                <span className="mt-1 block truncate text-sm font-semibold">{todayExercise.name}</span>
-              </Link>
-            </div>
-          </div>
-        </section>
+        <LookHero look={look} data={{ greeting, todayMood, streak, moods: allMoods, exerciseName: todayExercise.name }} />
 
         <div className="mb-5 flex items-end justify-between gap-4">
           <div>

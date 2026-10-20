@@ -3,6 +3,7 @@ import { Home, MessageCircle, BookOpen, Heart, Wind, Phone, AlertTriangle } from
 import { useState, useEffect, useRef } from 'react'
 import Disclaimer from './components/Disclaimer'
 import CrisisAlert from './components/CrisisAlert'
+import LookPicker from './components/LookPicker'
 import { AI_ENABLED } from './lib/ai'
 
 const navItems = [
@@ -108,12 +109,13 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-[var(--bg)] text-[var(--text)]">
+    <div className="app-root min-h-screen flex flex-col md:flex-row bg-[var(--bg)] text-[var(--text)]">
       <LaunchVeil />
+      <LookPicker />
       <div className="status-shield" aria-hidden="true" />
       <a href="#main-content" className="skip-link">Skip to main content</a>
 
-      <aside className="nav-safe fixed bottom-0 left-0 right-0 md:bottom-auto md:right-auto md:w-64 md:min-h-screen md:top-0 bg-[rgba(17,25,35,0.96)] backdrop-blur-xl border-t md:border-t-0 md:border-r border-white/10 flex md:flex-col items-center md:items-stretch px-2 md:px-4 py-2 md:py-5 gap-1 md:gap-2 z-50">
+      <aside className="tabbar nav-safe fixed bottom-0 left-0 right-0 md:bottom-auto md:right-auto md:w-64 md:min-h-screen md:top-0 backdrop-blur-xl border-t md:border-t-0 md:border-r border-white/10 flex md:flex-col items-center md:items-stretch px-2 md:px-4 py-2 md:py-5 gap-1 md:gap-2 z-50">
         <div className="hidden md:flex items-center gap-3 mb-7 px-2 py-1">
           <img src="/mindspace-icon.png" alt="" aria-hidden="true" className="w-10 h-10 rounded-lg glow-sunset" />
           <div>
@@ -132,8 +134,8 @@ export default function App() {
               className={({ isActive }) =>
                 `${'mobileHidden' in item ? 'hidden md:flex' : 'flex'} relative z-10 min-w-0 flex-1 flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 px-1 md:px-3 py-1.5 md:py-2.5 rounded-xl text-[10px] md:text-sm transition-all min-h-[50px] md:min-h-[44px] md:w-full ${
                   isActive
-                    ? 'tab-active md:bg-white/10 text-[#f5c56a] font-semibold md:shadow-[inset_3px_0_0_0_#f5c56a]'
-                    : 'font-medium text-white/55 hover:bg-white/8 hover:text-white'
+                    ? 'tab-active md:bg-white/10 font-semibold md:shadow-[inset_3px_0_0_0_#f5c56a]'
+                    : 'font-medium hover:bg-white/8'
                 }`
               }
             >

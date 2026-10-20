@@ -206,7 +206,7 @@ export default function Chat() {
       <div className="flex-1 flex flex-col min-w-0">
         <h1 className="sr-only">Mindspace chat</h1>
         {/* Header */}
-        <div className="flex items-center gap-2 px-3 py-2.5 border-b border-[var(--color-border)] bg-[rgba(255,253,248,0.9)] backdrop-blur-xl">
+        <div className="flex items-center gap-2 px-3 py-2.5 border-b border-[var(--color-border)] chat-head backdrop-blur-xl">
           <button onClick={() => setShowConvList(!showConvList)} aria-label="Your conversations" className="press md:hidden text-[var(--color-on-surface-muted)] min-w-[44px] min-h-[44px] rounded-xl flex items-center justify-center">
             <History size={20} aria-hidden="true" />
           </button>
@@ -278,7 +278,7 @@ export default function Chat() {
           {messages.map((msg, i) => (
             msg.role === 'user' ? (
               <div key={i} className="flex justify-end msg-in">
-                <div className="max-w-[80%] px-4 py-2.5 rounded-[20px] rounded-br-md bg-[var(--bg-deep)] text-[#fffaf1] text-[15px] leading-relaxed whitespace-pre-wrap">{msg.content}</div>
+                <div className="max-w-[80%] px-4 py-2.5 rounded-[20px] rounded-br-md bubble-user text-[15px] leading-relaxed whitespace-pre-wrap">{msg.content}</div>
               </div>
             ) : (
               <div key={i} className="flex items-end gap-2 msg-in">

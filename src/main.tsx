@@ -3,6 +3,14 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import '@fontsource-variable/inter'
 import './index.css'
+import '@fontsource/space-grotesk/300.css'
+import '@fontsource/space-grotesk/400.css'
+import '@fontsource/space-grotesk/500.css'
+import '@fontsource/instrument-serif/400.css'
+import '@fontsource/jetbrains-mono/400.css'
+import '@fontsource/jetbrains-mono/500.css'
+import './looks.css'
+import { applyLook, loadLook } from './lib/theme'
 import App from './App.tsx'
 import { Capacitor } from '@capacitor/core'
 import { Keyboard } from '@capacitor/keyboard'
@@ -25,6 +33,8 @@ if (Capacitor.isNativePlatform()) {
   Keyboard.addListener('keyboardWillShow', () => document.body.classList.add('kb-open'))
   Keyboard.addListener('keyboardWillHide', () => document.body.classList.remove('kb-open'))
 }
+
+applyLook(loadLook())
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
