@@ -12,6 +12,7 @@
     "build:android": "tsc -b && VITE_AI_ENABLED=false vite build && cap sync android"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.135.0",
     "@capacitor/android": "^7.6.9",
     "@capacitor/core": "^7.6.9",
     "@capacitor/ios": "^7.6.9",

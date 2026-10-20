@@ -1,9 +1,17 @@
 import { getFreeLlmConfig, providerHeaders, sendJson } from './_freellm.js'
+import { claudeEnabled } from './_claude.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     res.setHeader('Allow', 'GET, HEAD')
     sendJson(res, 405, { error: 'Method not allowed' })
+    return
+  }
+
+  // With a Claude key configured there is nothing to ping (and no cost to pay for a health check).
+  if (claudeEnabled()) {
+    if (req.method === 'HEAD') { res.statusCode = 204; res.end(); return }
+    sendJson(res, 200, { ok: true })
     return
   }
 
