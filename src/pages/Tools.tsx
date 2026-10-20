@@ -36,7 +36,8 @@ export default function Tools() {
               <ArrowRight size={18} className="text-[var(--text-muted)] mt-1 shrink-0" aria-hidden="true" />
             </Link>
           ))}
-        </div>
+                </div>
+        <Link to="/world" className="press mt-6 flex items-center justify-center gap-2 min-h-[48px] text-sm font-semibold text-[var(--color-primary)]">Take the tour of Mindspace <ArrowRight size={15} aria-hidden="true" /></Link>
       </div>
     </div>
   )

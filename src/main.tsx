@@ -1,4 +1,4 @@
-import { StrictMode } from 'react'
+import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import '@fontsource-variable/inter'
@@ -24,6 +24,7 @@ import Resources from './pages/Resources.tsx'
 import Tools from './pages/Tools.tsx'
 import Settings from './pages/Settings.tsx'
 import { features } from './features'
+const World = lazy(() => import('./world/World'))
 
 if (import.meta.env.VITE_DEMO_SEED === 'true') {
   localStorage.setItem('mindspace-ack', 'true')
@@ -43,6 +44,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
       <BrowserRouter>
         <Routes>
+          <Route path="/world" element={<Suspense fallback={<div style={{ minHeight: '100vh', background: '#120f1c' }} />}><World /></Suspense>} />
           <Route path="/" element={<App />}>
             <Route index element={<Home />} />
             {AI_ENABLED && <Route path="chat" element={<Chat />} />}
