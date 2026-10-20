@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Settings as SettingsIcon, ArrowRight } from 'lucide-react'
+import { Settings as SettingsIcon, ArrowRight, Wind } from 'lucide-react'
 import { features } from '../features'
 
 export default function Tools() {
@@ -18,6 +18,14 @@ export default function Tools() {
         </div>
         {features.length === 0 && <p className="text-[var(--text-muted)]">New tools are on the way.</p>}
         <div className="grid sm:grid-cols-2 gap-3">
+          <Link to="/exercises" className="card card-hover press p-5 flex items-start gap-4">
+            <span className="icon-tile w-11 h-11 shrink-0"><Wind size={20} aria-hidden="true" /></span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-semibold text-[var(--text)]">Breathe and ground</span>
+              <span className="block text-sm text-[var(--text-muted)] mt-0.5">Box breathing, 5-4-3-2-1, thought record, body scan.</span>
+            </span>
+            <ArrowRight size={18} className="text-[var(--text-muted)] mt-1 shrink-0" aria-hidden="true" />
+          </Link>
           {features.map((f) => (
             <Link key={f.id} to={f.route} className="card card-hover press p-5 flex items-start gap-4">
               <span className="icon-tile w-11 h-11 shrink-0"><f.icon size={20} aria-hidden="true" /></span>

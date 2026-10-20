@@ -1,5 +1,5 @@
 import { Outlet, NavLink, Link, useLocation } from 'react-router-dom'
-import { Home, MessageCircle, BookOpen, Heart, Wind, Phone, AlertTriangle } from 'lucide-react'
+import { Home, MessageCircle, BookOpen, Heart, Phone, AlertTriangle, LayoutGrid } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import Disclaimer from './components/Disclaimer'
 import CrisisAlert from './components/CrisisAlert'
@@ -13,7 +13,8 @@ const navItems = [
   { to: '/chat', label: 'Chat', icon: MessageCircle, mobileHidden: true },
   { to: '/journal', label: 'Journal', icon: BookOpen },
   { to: '/mood', label: 'Mood', icon: Heart },
-  { to: '/exercises', label: 'Exercises', icon: Wind },
+  // Exercises live at the top of Tools; the tab bar keeps five slots.
+  { to: '/tools', label: 'Tools', icon: LayoutGrid },
   { to: '/resources', label: 'Resources', icon: Phone },
 ].filter((item) => AI_ENABLED || item.to !== '/chat')
 
