@@ -7,9 +7,9 @@ export type BabelLang = 'en' | 'pcm' | 'yo' | 'ig' | 'ha'
 export const LANGUAGES: { id: BabelLang; name: string; note: string }[] = [
   { id: 'en', name: 'English', note: 'The default. Companions already speak it.' },
   { id: 'pcm', name: 'Naija Pidgin', note: 'Everyday Nigerian Pidgin, warm and natural.' },
-  { id: 'yo', name: 'Yorùbá', note: 'Companions greet and reply in Yorùbá.' },
-  { id: 'ig', name: 'Igbo', note: 'Companions greet and reply in Igbo.' },
-  { id: 'ha', name: 'Hausa', note: 'Companions greet and reply in Hausa.' },
+  { id: 'yo', name: 'Yorùbá', note: 'Companions reply in Yorùbá. Greetings are still being checked by native speakers.' },
+  { id: 'ig', name: 'Igbo', note: 'Companions reply in Igbo. Greetings are still being checked by native speakers.' },
+  { id: 'ha', name: 'Hausa', note: 'Companions reply in Hausa. Greetings are still being checked by native speakers.' },
 ]
 
 export function loadLang(): BabelLang {
