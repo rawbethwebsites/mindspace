@@ -79,7 +79,7 @@ export default function World() {
   }, [fallback])
 
   const enter = (route = '/') => {
-    try { localStorage.setItem('mindspace-entered', '1') } catch { /* private mode */ }
+    try { sessionStorage.setItem('mindspace-entered', '1') } catch { /* private mode */ }
     window.scrollTo(0, 0)
     navigate(route)
   }

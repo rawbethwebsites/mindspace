@@ -9,7 +9,7 @@
   padding: calc(14px + env(safe-area-inset-top)) 20px 14px; background: linear-gradient(180deg, rgba(10,8,18,.55), transparent); }
 .world-brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 17px; letter-spacing: -.01em; }
 .world-brand img { width: 30px; height: 30px; border-radius: 8px; }
-.world-skip { font-size: 14px; font-weight: 500; padding: 0 16px; min-height: 40px; border-radius: 999px; border: 1px solid rgba(255,255,255,.28); color: #fff; background: rgba(255,255,255,.08); backdrop-filter: blur(12px); }
+.world-skip { white-space: nowrap; font-size: 14px; font-weight: 500; padding: 0 16px; min-height: 40px; border-radius: 999px; border: 1px solid rgba(255,255,255,.28); color: #fff; background: rgba(255,255,255,.08); backdrop-filter: blur(12px); }
 
 .world-dots { position: fixed; right: 10px; top: 50%; transform: translateY(-50%); z-index: 5; display: flex; flex-direction: column; gap: 2px; }
 .world-dots button { position: relative; display: flex; align-items: center; justify-content: flex-end; width: 28px; height: 22px; background: none; border: 0; padding: 0; color: inherit; }

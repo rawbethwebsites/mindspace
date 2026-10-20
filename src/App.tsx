@@ -109,7 +109,8 @@ export default function App() {
 
   // On the website, a first-time visitor starts in the 3D world; the phone app opens straight into the app.
   let entered = true
-  try { entered = !!localStorage.getItem('mindspace-entered') || !!localStorage.getItem('mindspace-ack') } catch { /* private mode */ }
+  // Website: every new visit opens on the brain; inside one visit, the app stays the app.
+  try { entered = !!sessionStorage.getItem('mindspace-entered') } catch { /* private mode */ }
   if (!Capacitor.isNativePlatform() && !entered && location.pathname === '/') return <Navigate to="/world" replace />
 
   if (!acknowledged) {
