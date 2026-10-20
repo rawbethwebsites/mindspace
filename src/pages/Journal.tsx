@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { BookOpen, Sparkles, Trash2, Loader2, Plus } from 'lucide-react'
-import { getJournalEntries, saveJournalEntry, deleteJournalEntry } from '../lib/db'
-import { getJournalReflection } from '../lib/ai'
+import { getJournalEntries, saveJournalEntry, deleteJournalEntry, addWin } from '../lib/db'
+import { getJournalReflection, AI_ENABLED } from '../lib/ai'
 import { useEffect } from 'react'
 
 type Entry = { id: string; title: string; body: string; reflection?: string; createdAt: number; updatedAt: number }
@@ -51,6 +51,13 @@ export default function Journal() {
   const handleDelete = async (id: string) => {
     await deleteJournalEntry(id)
     loadEntries()
+  }
+
+  const handleAddToWins = async (entry: Entry) => {
+    const snippet = entry.title.trim() || entry.body.trim().slice(0, 80)
+    if (!snippet) return
+    await addWin(snippet)
+    // Quiet feedback — the small badge on the card already hints a reflection exists.
   }
 
   const handleReflection = async () => {
@@ -113,14 +120,14 @@ export default function Journal() {
             >
               Save Entry
             </button>
-            <button
+            {AI_ENABLED && <button
               onClick={handleReflection}
               disabled={!body.trim() || gettingReflection}
               className="px-4 py-3 rounded-lg bg-[var(--color-surface)] border border-[var(--color-primary)]/30 text-[var(--color-primary)] font-medium hover:bg-[var(--color-surface-hover)] transition-colors disabled:opacity-40 flex items-center gap-2"
             >
               {gettingReflection ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
               {reflection ? 'New Reflection' : 'Get Reflection'}
-            </button>
+            </button>}
           </div>
         </div>
       </div>
@@ -134,11 +141,11 @@ export default function Journal() {
           <div>
             <p className="page-kicker mb-2">Private reflection</p>
             <h1 className="page-title mb-2">Journal</h1>
-            <p className="page-subtitle">Write freely, keep it on device, and ask for a gentle reflection when you want one.</p>
+            <p className="page-subtitle">{AI_ENABLED ? 'Write freely, keep it on device, and ask for a gentle reflection when you want one.' : 'Write freely. Your entries stay on this device.'}</p>
           </div>
           <button
             onClick={newEntry}
-            className="btn-sunset flex items-center gap-2 px-4 py-2.5 text-sm min-h-[44px]"
+            className="btn-sunset shrink-0 whitespace-nowrap flex items-center gap-2 px-4 py-2.5 text-sm min-h-[44px]"
           >
             <Plus size={16} /> New Entry
           </button>
@@ -168,12 +175,23 @@ export default function Journal() {
               >
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="font-semibold text-[var(--color-on-surface)]">{entry.title}</h3>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleDelete(entry.id) }}
-                    className="opacity-0 group-hover:opacity-100 text-[var(--color-on-surface-muted)] hover:text-[var(--color-error)] transition-all"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleAddToWins(entry) }}
+                      aria-label="Add this entry to your wins jar"
+                      title="Add to wins jar"
+                      className="opacity-0 group-hover:opacity-100 text-[var(--color-on-surface-muted)] hover:text-[var(--color-primary)] transition-all min-w-[32px] min-h-[32px] flex items-center justify-center"
+                    >
+                      <Sparkles size={15} aria-hidden="true" />
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDelete(entry.id) }}
+                      aria-label="Delete this entry"
+                      className="opacity-0 group-hover:opacity-100 text-[var(--color-on-surface-muted)] hover:text-[var(--color-error)] transition-all min-w-[32px] min-h-[32px] flex items-center justify-center"
+                    >
+                      <Trash2 size={16} aria-hidden="true" />
+                    </button>
+                  </div>
                 </div>
                 <p className="text-sm text-[var(--color-on-surface-muted)] line-clamp-2 mb-3">{entry.body}</p>
                 {entry.reflection && (

@@ -55,7 +55,7 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
@@ -216,6 +216,142 @@ button, a[role="button"], .touch-target { min-height: 44px; min-width: 44px; }
 @media (min-width: 768px) {
   .app-page { padding: 2.5rem 3rem 6rem; }
 }
+
+
+/* ═══ Motion system · calm/premium ═══
+   One signature curve (--ease-calm) for entrances, quick press-down, slower settle.
+   Speeds: quick 140ms (press), standard 360ms (state), slow 560ms (page/launch). */
+:root {
+  --ease-calm: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-std: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-pop: cubic-bezier(0.34, 1.45, 0.64, 1);
+  --t-quick: 140ms;
+  --t-std: 360ms;
+  --t-slow: 560ms;
+  /* Closed-form spring step responses (zeta 0.78 / 0.82): ~2% and ~1% overshoot, no bounce */
+  --spring: linear(0, 0.022, 0.079, 0.158, 0.249, 0.345, 0.44, 0.531, 0.615, 0.69, 0.756, 0.813, 0.861, 0.901, 0.933, 0.959, 0.978, 0.993, 1.004, 1.011, 1.016, 1.019, 1.02, 1.02, 1.019, 1.017, 1.016, 1.014, 1.012, 1.01, 1.008, 1.007, 1.005, 1.004, 1.003, 1.002, 1);
+  --spring-quick: linear(0, 0.021, 0.076, 0.151, 0.238, 0.33, 0.421, 0.507, 0.588, 0.661, 0.725, 0.781, 0.829, 0.869, 0.903, 0.93, 0.952, 0.969, 0.982, 0.992, 0.999, 1.004, 1.008, 1.01, 1.011, 1.011, 1.011, 1.01, 1.009, 1.008, 1.007, 1.006, 1.005, 1.005, 1.004, 1.003, 1);
+}
+@supports (transition-timing-function: linear(0, 1)) {
+  :root { --ease-calm: var(--spring); --ease-pop: var(--spring-quick); }
+}
+
+@keyframes pageFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes moodPop { from { transform: scale(0.86); } to { transform: scale(1.08); } }
+@keyframes veilOut { to { opacity: 0; visibility: hidden; } }
+@keyframes veilIcon { 0% { transform: none; } 100% { transform: translateY(-10px) scale(1.06); opacity: 0; } }
+@keyframes heroDrift { from { transform: scale(1.02) translateY(0); } to { transform: scale(1.08) translateY(-1.5%); } }
+@keyframes tabBump { 0% { transform: translateY(0); } 50% { transform: translateY(-3px) scale(1.1); } 100% { transform: translateY(-1px) scale(1.04); } }
+
+/* Page change: the page fades, its sections rise in one after another (micro cascade, <300ms total) */
+.page-enter { animation: pageFade var(--t-std) var(--ease-std) both; }
+.page-enter .app-page > div > * { animation: riseIn var(--t-slow) var(--ease-calm) both; }
+.page-enter .app-page > div > *:nth-child(2) { animation-delay: 50ms; }
+.page-enter .app-page > div > *:nth-child(3) { animation-delay: 100ms; }
+.page-enter .app-page > div > *:nth-child(4) { animation-delay: 150ms; }
+.page-enter .app-page > div > *:nth-child(5) { animation-delay: 200ms; }
+.page-enter .app-page > div > *:nth-child(n+6) { animation-delay: 240ms; }
+.rise-in { animation: riseIn var(--t-slow) var(--ease-calm) both; }
+
+/* Press: sink quickly, settle slowly */
+.btn-sunset, .btn-ghost, .card-hover, .press {
+  transition: transform var(--t-std) var(--ease-calm), background var(--t-std) var(--ease-std),
+    box-shadow var(--t-std) var(--ease-std), border-color var(--t-std) var(--ease-std), opacity var(--t-std) var(--ease-std);
+}
+.btn-sunset:active, .btn-ghost:active, .press:active { transform: scale(0.97); transition-duration: var(--t-quick); }
+.card-hover:active { transform: scale(0.985); box-shadow: var(--shadow-card); transition-duration: var(--t-quick); }
+
+/* Tab bar: the active icon lifts */
+.tab-icon { transition: transform var(--t-std) var(--ease-calm); }
+.tab-active .tab-icon { animation: tabBump var(--t-std) var(--ease-pop) both; }
+
+/* Mood check-in */
+.mood-pop { animation: moodPop var(--t-std) var(--ease-pop) both; }
+
+/* Mood chart: bars grow up from the baseline in a short wave */
+@keyframes barGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.bar-grow { transform-origin: bottom; animation: barGrow var(--t-slow) var(--ease-calm) both; }
+
+/* Notch + home indicator (iOS viewport-fit=cover; env() is 0 on the web) */
+.status-shield { position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top); background: var(--bg); z-index: 60; pointer-events: none; }
+.app-page { padding-top: calc(1.5rem + env(safe-area-inset-top)); }
+.nav-safe { padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); }
+@media (min-width: 768px) { .app-page { padding-top: calc(2.5rem + env(safe-area-inset-top)); } .nav-safe { padding-bottom: 1.25rem; } }
+
+.chat-shell { height: 100dvh; padding-top: env(safe-area-inset-top); padding-bottom: calc(4.4rem + env(safe-area-inset-bottom)); }
+@media (min-width: 768px) { .chat-shell { padding-bottom: 2rem; } }
+
+/* Floating chat button (phones): coral sunrise, soft breathing halo */
+.chat-fab { position: fixed; right: 1rem; bottom: calc(5.75rem + env(safe-area-inset-bottom)); z-index: 40;
+  width: 56px; height: 56px; border-radius: 999px; display: flex; align-items: center; justify-content: center;
+  color: #fffaf1; background: #d9542b; box-shadow: 0 10px 24px rgba(17, 25, 35, .22); }
+
+
+/* Keyboard open on a phone: the tab bar and chat button step aside, the chat input sits on the keyboard */
+@media (max-width: 767px) {
+  body.kb-open .nav-safe, body.kb-open .chat-fab { display: none; }
+  body.kb-open .chat-shell { padding-bottom: 0.5rem; }
+}
+
+/* Liquid tab pill */
+.tab-liquid { position: absolute; top: 0; bottom: 0; border-radius: 14px; background: rgba(255, 255, 255, 0.1); z-index: 0;
+  transition-property: left, right, opacity; transition-timing-function: var(--spring), var(--spring), ease; }
+
+/* Content swaps inside a morphing shape: short blur in */
+@keyframes swapIn { from { opacity: 0; filter: blur(5px); transform: scale(0.94); } to { opacity: 1; filter: none; transform: none; } }
+.swap-in { animation: swapIn 220ms var(--ease-calm) both; }
+
+/* Morphing button: full-width pill -> circle (loader/check) -> back */
+.morph-btn { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 100%; margin-inline: auto;
+  transition: max-width 520ms var(--spring), border-radius 520ms var(--spring), background 300ms ease, transform var(--t-std) var(--ease-calm); }
+.morph-btn.is-compact { max-width: 48px; border-radius: 999px; padding-inline: 0; }
+.morph-btn.is-done { background: var(--color-success); }
+
+/* Chat */
+@keyframes msgIn { from { opacity: 0; transform: translateY(10px) scale(0.98); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+.msg-in { animation: msgIn 380ms var(--ease-calm) both; transform-origin: bottom left; }
+@keyframes dot { 0%, 80%, 100% { transform: translateY(0); opacity: .35; } 40% { transform: translateY(-4px); opacity: 1; } }
+.typing-dots { display: inline-flex; gap: 5px; padding: 6px 2px; }
+.typing-dots i { width: 7px; height: 7px; border-radius: 99px; background: var(--color-primary); animation: dot 1.2s ease-in-out infinite; }
+.typing-dots i:nth-child(2) { animation-delay: .15s; } .typing-dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes sunBreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+.chat-sun { animation: sunBreathe 6s ease-in-out infinite; box-shadow: 0 14px 30px rgba(189, 65, 35, .18); }
+.chat-bar { transition: border-color var(--t-std) var(--ease-std), box-shadow var(--t-std) var(--ease-std); }
+.chat-bar:focus-within { border-color: rgba(217, 84, 43, .45); box-shadow: 0 0 0 4px rgba(217, 84, 43, .08); }
+@keyframes drawerIn { from { transform: translateX(-100%); } to { transform: none; } }
+.drawer-in { animation: drawerIn 420ms var(--ease-calm) both; }
+
+@keyframes sheetIn { from { transform: translateY(100%); } to { transform: none; } }
+.sheet-in { animation: sheetIn 460ms var(--ease-calm) both; }
+.companion-row { scrollbar-width: none; scroll-snap-type: x proximity; } .companion-row::-webkit-scrollbar { display: none; }
+.companion-row > * { scroll-snap-align: start; }
+
+/* First-launch logo: the tile settles, the sun rises over the horizon, the lines draw out, the name follows */
+.intro { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: #f4f1eb; pointer-events: none; animation: veilOut 520ms var(--ease-std) 1950ms both; }
+.intro svg { width: 112px; height: 112px; overflow: visible; }
+.intro .tile { transform-origin: 50px 50px; animation: tileIn 640ms var(--spring) both; }
+.intro .sun { animation: sunRise 900ms var(--spring) 260ms both; }
+.intro .ln { transform-box: fill-box; transform-origin: center; animation: lineDraw 520ms var(--spring) both; }
+.intro .ln1 { animation-delay: 560ms; } .intro .ln2 { animation-delay: 660ms; } .intro .ln3 { animation-delay: 760ms; }
+.intro .name { margin-top: 22px; font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #111923; animation: riseIn 560ms var(--ease-calm) 950ms both; }
+.intro .tag { margin-top: 4px; font-size: 14px; color: #4b5560; animation: riseIn 560ms var(--ease-calm) 1080ms both; }
+@keyframes tileIn { from { opacity: 0; transform: scale(0.82); } to { opacity: 1; transform: none; } }
+@keyframes sunRise { from { transform: translateY(28px); } to { transform: none; } }
+@keyframes lineDraw { from { transform: scaleX(0); } to { transform: none; } }
+
+/* No rubber-band bounce past the page edges in the app shell */
+html, body { overscroll-behavior: none; }
+
+/* Home hero: slow ambient drift */
+.hero-drift { animation: heroDrift 24s ease-in-out infinite alternate; transform-origin: 50% 60%; }
+
+/* Launch veil: picks up from the native splash and dissolves into the app */
+.launch-veil { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center;
+  background: #f4f1eb; animation: veilOut var(--t-slow) var(--ease-std) 520ms both; pointer-events: none; }
+.launch-veil img { width: 104px; height: 104px; border-radius: 24px; box-shadow: 0 18px 40px rgba(189, 65, 35, 0.22);
+  animation: veilIcon var(--t-slow) var(--ease-std) 460ms both; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

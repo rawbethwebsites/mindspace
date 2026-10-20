@@ -1,20 +1,29 @@
 import { useEffect, useState } from 'react'
-import { TrendingUp, Frown, Meh, Smile, Laugh } from 'lucide-react'
-import { getMoods, saveMood, getTodayMood } from '../lib/db'
+import { Link } from 'react-router-dom'
+import { TrendingUp, Frown, Meh, Smile, Laugh, Loader2, Check, Sparkles } from 'lucide-react'
+import { getMoods, saveMood, getTodayMood, localDay, getWins } from '../lib/db'
+import { MOOD_TAGS } from '../features/b-tags'
 
 const moodIcons = [Frown, Frown, Meh, Smile, Laugh]
 const moodLabels = ['Struggling', 'Low', 'Okay', 'Good', 'Great']
+// Stored dates are YYYY-MM-DD; read them as local calendar days.
+const asDay = (d: string) => new Date(`${d}T12:00:00`)
+const prettyDate = (d: string) => asDay(d).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })
+const dayInitial = (d: string) => asDay(d).toLocaleDateString(undefined, { weekday: 'narrow' })
 const moodColors = ['#e8444c', '#e8844c', '#f8b830', '#f88820', '#6ab070']
 
 export default function Mood() {
   const [selected, setSelected] = useState<number | null>(null)
   const [note, setNote] = useState('')
-  const [saved, setSaved] = useState(false)
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'done'>('idle')
   const [moods, setMoods] = useState<{ date: string; mood: number; note?: string }[]>([])
   const [todaySet, setTodaySet] = useState(false)
+  const [hasWins, setHasWins] = useState(false)
+  const [tags, setTags] = useState<string[]>([])
 
   useEffect(() => {
     loadData()
+    getWins().then((w) => setHasWins(w.length > 0))
   }, [])
 
   const loadData = async () => {
@@ -22,27 +31,33 @@ export default function Mood() {
     if (today) {
       setSelected(today.mood)
       setNote(today.note || '')
+      setTags(today.tags ?? [])
       setTodaySet(true)
     }
     const all = await getMoods()
     setMoods(all)
   }
 
+  const toggleTag = (id: string) => {
+    setTags((t) => (t.includes(id) ? t.filter((x) => x !== id) : [...t, id]))
+  }
+
   const handleSave = async () => {
     if (selected === null) return
-    await saveMood(selected, note.trim() || undefined)
-    setSaved(true)
+    // One shape, three states (after "Shape morphing through UI states"): button -> loader -> check -> button
+    setSaveState('saving')
+    await Promise.all([saveMood(selected, note.trim() || undefined, tags), new Promise((r) => setTimeout(r, 420))])
+    setSaveState('done')
     setTodaySet(true)
-    setTimeout(() => setSaved(false), 2000)
+    setTimeout(() => setSaveState('idle'), 1300)
     loadData()
   }
 
   const streak = (() => {
     let s = 0
-    const today = new Date().toISOString().split('T')[0]
     const dates = new Set(moods.map(m => m.date))
-    let d = new Date(today)
-    while (dates.has(d.toISOString().split('T')[0])) {
+    const d = new Date()
+    while (dates.has(localDay(d))) {
       s++
       d.setDate(d.getDate() - 1)
     }
@@ -74,9 +89,10 @@ export default function Mood() {
                 }`}
               >
                 <Icon
+                  key={selected === i ? 'on' : 'off'}
                   size={32}
-                  className="transition-colors"
-                  style={{ color: selected === i ? moodColors[i] : 'var(--color-on-surface-subtle)' }}
+                  className={`transition-colors ${selected === i ? 'mood-pop' : ''}`}
+                  style={{ color: moodColors[i], opacity: selected === null || selected === i ? 1 : 0.45 }}
                   aria-hidden="true"
                 />
                 <span className={`text-xs font-medium ${selected === i ? 'text-[var(--color-on-surface)]' : 'text-[var(--color-on-surface-muted)]'}`}>{moodLabels[i]}</span>
@@ -94,13 +110,39 @@ export default function Mood() {
             className="w-full px-4 py-3 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-sm text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-subtle)] focus:outline-none focus:border-[var(--color-primary)] transition-colors resize-none mb-4"
           />
 
+          {/* Day tags (Batch B "Your patterns") — optional context for the day */}
+          <div className="mb-4">
+            <p className="text-sm font-medium text-[var(--color-on-surface-muted)] mb-2">What was today like? (optional)</p>
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Day tags">
+              {MOOD_TAGS.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => toggleTag(t.id)}
+                  aria-pressed={tags.includes(t.id)}
+                  className={`press min-h-[44px] px-3.5 rounded-full border text-[13px] transition-colors ${
+                    tags.includes(t.id)
+                      ? 'bg-[var(--color-primary)]/15 border-[var(--color-primary)]/50 text-[var(--color-on-surface)] font-medium'
+                      : 'border-[var(--color-border)] text-[var(--color-on-surface-muted)]'
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <button
             onClick={handleSave}
             disabled={selected === null}
             aria-label={todaySet ? 'Update mood check-in' : 'Save mood check-in'}
-            className="btn-sunset w-full py-3 disabled:opacity-40 disabled:cursor-not-allowed min-h-[44px]"
+            className={`btn-sunset morph-btn py-3 disabled:opacity-40 disabled:cursor-not-allowed min-h-[48px] ${saveState !== 'idle' ? 'is-compact' : ''} ${saveState === 'done' ? 'is-done' : ''}`}
           >
-            {saved ? '✓ Saved' : todaySet ? 'Update check-in' : 'Save check-in'}
+            <span key={saveState} className="swap-in flex items-center justify-center" aria-live="polite">
+              {saveState === 'saving' ? <Loader2 size={20} className="animate-spin" aria-label="Saving" />
+                : saveState === 'done' ? <Check size={22} strokeWidth={2.6} aria-label="Saved" />
+                : todaySet ? 'Update check-in' : 'Save check-in'}
+            </span>
           </button>
         </div>
 
@@ -114,6 +156,21 @@ export default function Mood() {
           </span>
         </div>
 
+        {todaySet && selected !== null && selected <= 1 && hasWins && (
+          <Link
+            to="/wins-jar"
+            className="press flex items-center gap-3 mb-6 p-4 card text-left"
+          >
+            <div className="icon-tile w-10 h-10">
+              <Sparkles size={18} className="text-[var(--color-primary)]" aria-hidden="true" />
+            </div>
+            <span className="flex-1">
+              <span className="block text-sm font-semibold text-[var(--color-on-surface)]">Open your wins jar</span>
+              <span className="block text-xs text-[var(--color-on-surface-muted)] mt-0.5">A few small things you've already done, poured out for you.</span>
+            </span>
+          </Link>
+        )}
+
         {/* History */}
         {moods.length > 0 && (
           <div className="card p-6">
@@ -121,22 +178,24 @@ export default function Mood() {
 
             {/* Chart */}
             <div
-              className="flex items-end justify-between gap-1 h-32 mb-6"
+              className="flex items-end justify-between gap-1.5 h-36 mb-6"
               role="img"
               aria-label={`Mood chart for last ${Math.min(moods.length, 14)} days: ${moods.slice(-14).map(m => `${moodLabels[m.mood]} on ${m.date}`).join(', ')}`}
             >
               {moods.slice(-14).map((m, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1 group relative">
+                <div key={i} className="flex-1 h-full flex flex-col items-center justify-end gap-1.5 group relative">
                   <div
-                    className="w-full rounded-t-lg transition-all hover:opacity-80"
+                    className="bar-grow w-full rounded-t-lg rounded-b-sm hover:opacity-80"
                     style={{
-                      height: `${(m.mood / 4) * 100}%`,
+                      height: `${14 + (m.mood / 4) * 86}%`,
+                      animationDelay: `${i * 30}ms`,
                       background: `linear-gradient(to top, ${moodColors[m.mood]}40, ${moodColors[m.mood]})`,
                     }}
                   />
                   <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity absolute -top-8 whitespace-nowrap bg-[var(--color-surface-elevated)] text-[var(--color-on-surface)] text-[10px] px-2 py-1 rounded border border-[var(--color-border)]">
                     {moodLabels[m.mood]} · {m.date.slice(5)}
                   </span>
+                  <span className="text-[10px] font-medium text-[var(--color-on-surface-subtle)]" aria-hidden="true">{dayInitial(m.date)}</span>
                 </div>
               ))}
             </div>
@@ -152,7 +211,7 @@ export default function Mood() {
                       <span className="text-sm font-medium text-[var(--color-on-surface)]">{moodLabels[m.mood]}</span>
                       {m.note && <p className="text-xs text-[var(--color-on-surface-muted)] mt-0.5">{m.note}</p>}
                     </div>
-                    <span className="text-xs text-[var(--color-on-surface-muted)]">{m.date}</span>
+                    <span className="text-xs text-[var(--color-on-surface-muted)]">{prettyDate(m.date)}</span>
                   </div>
                 )
               })}

@@ -1,0 +1,35 @@
+/* Your week as music (Batch B): gentle bars that breathe with the piece. */
+
+.week-viz {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  height: 130px;
+  padding: 0 4px;
+}
+.week-bar {
+  flex: 1;
+  border-radius: 999px;
+  background: linear-gradient(to top, var(--color-primary), var(--color-primary-light, var(--color-primary)));
+  opacity: 0.85;
+  transform-origin: bottom;
+  animation: weekBreathe 3.4s ease-in-out infinite;
+}
+.week-bar.rest {
+  background: var(--border);
+  opacity: 0.5;
+  animation: none;
+  min-height: 10px;
+}
+@keyframes weekBreathe {
+  0%, 100% { transform: scaleY(0.82); opacity: 0.55; }
+  50% { transform: scaleY(1); opacity: 0.95; }
+}
+.week-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-primary);
+}
+.week-dot.rest { background: var(--border); }
