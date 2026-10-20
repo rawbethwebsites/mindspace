@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { MoonStar, Loader2 } from 'lucide-react'
 import { getTodayMood, getJournalEntries } from '../../lib/db'
 import { streamChat, AI_ENABLED } from '../../lib/ai'
+import { detectCrisis } from '../../lib/crisis'
 
 const STORY_VOICE = `You are a slow, soothing storyteller for the very end of the day. Speak softly, in short calm sentences with long, easy rhythm. You are telling one person a very short bedtime story that wraps up their own day with warmth. No questions, no advice, no techniques, no lists. Nothing scary, nothing stimulating, no mentions of tasks or the morning. The story must end resting. Plain kind words, like a lullaby in prose. 120-180 words, in the language the person's Mindspace is set to.`
 
@@ -28,6 +29,12 @@ export default function TonightStory() {
       const seed = dayBits.length
         ? `Here is what today held for this person: ${dayBits.join(' ')} Weave a soft, dreamlike version of this day into a short bedtime story. Change names and details freely; keep it gentle and low.`
         : 'The person checked nothing in today. Tell a short, soft bedtime story about a quiet day with no weight to carry at all.'
+      // Their own words (journal titles) reach the AI, so the crisis check applies here too.
+      if (detectCrisis(seed)) {
+        window.dispatchEvent(new CustomEvent('show-crisis'))
+        setLoading(false)
+        return
+      }
       let full = ''
       for await (const chunk of streamChat([{ role: 'user', content: seed }], undefined, undefined, STORY_VOICE)) {
         full += chunk

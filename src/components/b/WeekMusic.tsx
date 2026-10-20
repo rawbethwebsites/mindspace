@@ -62,9 +62,21 @@ export default function WeekMusic() {
       const blob = await renderWeekWav(week)
       const file = new File([blob], 'my-week-in-sound.wav', { type: 'audio/wav' })
       const nav = navigator as Navigator & { canShare?: (d: { files: File[] }) => boolean }
+      let shared = false
       if (nav.share && nav.canShare?.({ files: [file] })) {
-        await nav.share({ files: [file], title: 'My week in sound' })
-      } else {
+        try {
+          await nav.share({ files: [file], title: 'My week in sound' })
+          shared = true
+        } catch (err) {
+          // They closed the share sheet themselves — quietly stop. Anything else
+          // (share blocked, no user gesture) falls back to a download below.
+          if (err instanceof Error && err.name === 'AbortError') {
+            setSaving(false)
+            return
+          }
+        }
+      }
+      if (!shared) {
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
@@ -75,8 +87,8 @@ export default function WeekMusic() {
         setTimeout(() => URL.revokeObjectURL(url), 4000)
         setMsg('Saved as my-week-in-sound.wav')
       }
-    } catch (err) {
-      if (!(err instanceof Error && err.name === 'AbortError')) setMsg('Could not save the piece. Please try again.')
+    } catch {
+      setMsg('Could not save the piece. Please try again.')
     } finally {
       setSaving(false)
     }
