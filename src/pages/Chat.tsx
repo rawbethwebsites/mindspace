@@ -4,6 +4,7 @@ import { streamChat, checkOllamaConnection } from '../lib/ai'
 import { detectCrisis } from '../lib/crisis'
 import { saveConversation, getAllConversations, deleteConversation, type ChatMessage } from '../lib/db'
 import { companions, getCompanion, loadCompanionId, saveCompanionId, type Companion } from '../lib/companions'
+import { translatedOpener } from '../features/b-openers'
 
 // Replies may use **bold**; show it as bold instead of raw asterisks (text only, no HTML).
 function RichText({ text }: { text: string }) {
@@ -256,7 +257,7 @@ export default function Chat() {
               <div key={companion.id} className="msg-in flex items-end gap-2 mb-5">
                 <CompanionAvatar c={companion} size={28} />
                 <div className="max-w-[80%] px-4 py-2.5 rounded-[20px] rounded-bl-md bg-[var(--color-surface)] border border-[var(--color-border)] text-[15px] leading-relaxed text-[var(--color-on-surface)]">
-                  {companion.opener}
+                  {translatedOpener(companionId)}
                   <span className="block mt-1.5 text-xs text-[var(--color-on-surface-muted)]">{companion.approach}</span>
                 </div>
               </div>
