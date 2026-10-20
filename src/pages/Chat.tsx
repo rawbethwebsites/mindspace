@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
-import { Plus, MessageCircle, Trash2, LifeBuoy, History, ArrowUp, ChevronDown, Check } from 'lucide-react'
+import { Plus, MessageCircle, Trash2, LifeBuoy, History, ArrowUp, ChevronDown, Check, Brain } from 'lucide-react'
 import { streamChat, checkOllamaConnection } from '../lib/ai'
 import { detectCrisis } from '../lib/crisis'
-import { saveConversation, getAllConversations, deleteConversation, type ChatMessage } from '../lib/db'
+import { saveConversation, getAllConversations, deleteConversation, saveMemory, type ChatMessage } from '../lib/db'
 import { companions, getCompanion, loadCompanionId, saveCompanionId, type Companion } from '../lib/companions'
 
 // Replies may use **bold**; show it as bold instead of raw asterisks (text only, no HTML).
@@ -277,8 +277,21 @@ export default function Chat() {
 
           {messages.map((msg, i) => (
             msg.role === 'user' ? (
-              <div key={i} className="flex justify-end msg-in">
+              <div key={i} className="flex flex-col items-end msg-in group">
                 <div className="max-w-[80%] px-4 py-2.5 rounded-[20px] rounded-br-md bubble-user text-[15px] leading-relaxed whitespace-pre-wrap">{msg.content}</div>
+                <button
+                  onClick={async () => {
+                    const fact = window.prompt('Save as something your companion should remember?\n\nEdit it to a short fact, or leave as-is:', msg.content.slice(0, 140))
+                    const trimmed = (fact ?? '').trim()
+                    if (trimmed) {
+                      await saveMemory(trimmed)
+                    }
+                  }}
+                  aria-label="Remember this message"
+                  className="press mt-1 px-2 py-1 rounded-md text-[11px] text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 transition-opacity min-h-[32px] flex items-center gap-1"
+                >
+                  <Brain size={11} aria-hidden="true" /> Remember this
+                </button>
               </div>
             ) : (
               <div key={i} className="flex items-end gap-2 msg-in">

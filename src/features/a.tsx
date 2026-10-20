@@ -5,6 +5,30 @@ import BurnIt from '../pages/BurnIt'
 import RehearsalRoom from '../pages/RehearsalRoom'
 import WinsJar from '../pages/WinsJar'
 import LetterMoment from '../components/LetterMoment'
+import MemorySettings from '../components/MemorySettings'
+import { getMemories } from '../lib/db'
+
+// The system addon function syncs a fresh read of memories once per app
+// session; IndexedDB is async, so we kick a pull on each call and use
+// whatever was cached by the previous call.
+let memoryCache: string[] = []
+let memoryPull: Promise<void> | null = null
+function refreshMemories() {
+  if (!memoryPull) {
+    memoryPull = getMemories()
+      .then((all) => {
+        memoryCache = all.filter((m) => m.enabled).map((m) => m.fact)
+      })
+      .catch(() => { memoryCache = [] })
+      .finally(() => { memoryPull = null })
+  }
+}
+function CompanionMemoryAddon(): string {
+  refreshMemories()
+  if (memoryCache.length === 0) return ''
+  const lines = memoryCache.slice(0, 12).map((f) => `- ${f}`)
+  return `Things this person has chosen to tell you about themselves (do not repeat back unprompted):\n${lines.join('\n')}`
+}
 
 // Batch A registers its features here (and only here) for the Tools page, Settings and app-wide helpers.
 export const bundleA: FeatureBundle = {
@@ -42,7 +66,14 @@ export const bundleA: FeatureBundle = {
       element: <WinsJar />,
     },
   ],
-  settings: [],
+  settings: [
+    {
+      id: 'memory-you-control',
+      title: 'What your companion remembers',
+      element: <MemorySettings />,
+    },
+  ],
   globals: [LetterMoment],
-  systemAddons: [],
+  systemAddons: [CompanionMemoryAddon],
 }
+
