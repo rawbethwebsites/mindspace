@@ -1,10 +1,26 @@
 import { assertMethod, getFreeLlmConfig, providerHeaders, readBody, sendJson } from './_freellm.js'
+import { claudeEnabled, claude, CLAUDE_MODEL, LIMITS } from './_claude.js'
 
 export default async function handler(req, res) {
   if (!assertMethod(req, res, 'POST')) return
 
   try {
     const { system, entry } = await readBody(req)
+    if (String(entry || '').length > LIMITS.maxChars) { sendJson(res, 413, { error: 'Entry too long' }); return }
+
+    if (claudeEnabled()) {
+      const msg = await claude().messages.create({
+        model: CLAUDE_MODEL,
+        max_tokens: LIMITS.maxTokens,
+        output_config: { effort: 'low' },
+        system: system || 'Offer a brief, supportive reflection.',
+        messages: [{ role: 'user', content: String(entry || '') }],
+      })
+      const text = msg.stop_reason === 'refusal' ? '' : msg.content.filter((b) => b.type === 'text').map((b) => b.text).join('')
+      sendJson(res, 200, { content: text || 'I hear you. Thank you for sharing this.' })
+      return
+    }
+
     const { apiKey, baseUrl, model } = getFreeLlmConfig()
 
     const upstream = await fetch(`${baseUrl}/chat/completions`, {

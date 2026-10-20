@@ -1,10 +1,38 @@
 import { assertMethod, getFreeLlmConfig, providerHeaders, readBody, sendJson } from './_freellm.js'
+import { claudeEnabled, claude, CLAUDE_MODEL, LIMITS, toClaude, REFUSAL_REPLY } from './_claude.js'
 
 export default async function handler(req, res) {
   if (!assertMethod(req, res, 'POST')) return
 
   try {
     const { messages = [] } = await readBody(req)
+    if (!Array.isArray(messages) || messages.length > LIMITS.maxMessages || JSON.stringify(messages).length > LIMITS.maxChars) {
+      sendJson(res, 413, { error: 'Conversation too long' })
+      return
+    }
+
+    if (claudeEnabled()) {
+      const { system, turns } = toClaude(messages)
+      if (!turns.length) { sendJson(res, 400, { error: 'No message' }); return }
+      res.statusCode = 200
+      res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+      res.setHeader('Cache-Control', 'no-cache, no-transform')
+      const stream = claude().messages.stream({
+        model: CLAUDE_MODEL,
+        max_tokens: LIMITS.maxTokens,
+        output_config: { effort: 'low' }, // a warm chat reply, not deep reasoning
+        system,
+        messages: turns,
+      })
+      for await (const event of stream) {
+        if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') res.write(event.delta.text)
+      }
+      const final = await stream.finalMessage()
+      if (final.stop_reason === 'refusal') res.write(REFUSAL_REPLY)
+      res.end()
+      return
+    }
+
     const { apiKey, baseUrl, model } = getFreeLlmConfig()
 
     const upstream = await fetch(`${baseUrl}/chat/completions`, {
