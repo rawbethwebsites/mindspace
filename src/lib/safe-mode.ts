@@ -39,29 +39,39 @@ export function stopShakeWipe() {
   window.removeEventListener('devicemotion', onMotion)
 }
 
-/** Full wipe — IndexedDB stores + localStorage + sessionStorage. */
+// Settings that must survive a wipe so the disguise stays in place afterwards.
+const KEEP_ON_WIPE = ['mindspace-safe-mode', 'mindspace-safe-code', 'mindspace-look', 'mindspace-quiet-dismissed']
+
+/** Full wipe: IndexedDB stores + localStorage + sessionStorage. The disguise and its code stay. */
 export async function fullWipe() {
   await clearAllData()
-  const protectedKeys = ['mindspace-quiet-dismissed'] // Quiet Signal dismissal is per-streak; wipe it
-  const localKeys = Object.keys(localStorage)
-  for (const k of localKeys) if (!protectedKeys.includes(k)) localStorage.removeItem(k)
-  try { sessionStorage.clear() } catch {}
-  // Force reload so the calculator disguise returns to its innocent state
+  for (const k of Object.keys(localStorage)) if (!KEEP_ON_WIPE.includes(k)) localStorage.removeItem(k)
+  try { sessionStorage.clear() } catch { /* ignore */ }
   window.location.reload()
 }
 
-/** Check if Safe-at-home Mode is enabled. */
 export function isSafeModeEnabled(): boolean {
-  return localStorage.getItem('mindspace-safe-mode') === '1'
+  try { return localStorage.getItem('mindspace-safe-mode') === '1' && /^\d{4}$/.test(getSafeCode() ?? '') } catch { return false }
 }
+
+export function getSafeCode(): string | null {
+  try { return localStorage.getItem('mindspace-safe-code') } catch { return null }
+}
+
+export function setSafeCode(code: string) {
+  localStorage.setItem('mindspace-safe-code', code)
+}
+
+// A shake never wipes directly: it asks the guard to start a 5-second countdown with Cancel.
+const requestWipe = () => window.dispatchEvent(new CustomEvent('safe-wipe-request'))
 
 export function setSafeMode(enabled: boolean) {
   localStorage.setItem('mindspace-safe-mode', enabled ? '1' : '0')
-  if (enabled) startShakeWipe(fullWipe)
+  if (enabled) startShakeWipe(requestWipe)
   else stopShakeWipe()
 }
 
 /** Initialise on app load if enabled. */
 export function initSafeMode() {
-  if (isSafeModeEnabled()) startShakeWipe(fullWipe)
+  if (isSafeModeEnabled()) startShakeWipe(requestWipe)
 }

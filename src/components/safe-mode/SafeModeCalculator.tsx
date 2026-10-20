@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { Calculator, Lock, Vibrate } from 'lucide-react'
-import { initSafeMode, isSafeModeEnabled, stopShakeWipe } from '../../lib/safe-mode'
+import { Calculator } from 'lucide-react'
+import { initSafeMode, getSafeCode } from '../../lib/safe-mode'
 
 /**
  * Safe-at-home Mode:
  * - Shows a completely normal-looking calculator
- * - Secret: tap the "MC" key 5 times fast → unlocks to Mindspace
+ * - Unlock: type the person's 4-digit code, then "=" (no hint is ever shown on screen)
  * - When enabled in Settings, shake-to-wipe is armed (requires user permission)
  * - All local data stays on device; wipe clears everything except Quiet Signal dismiss streak
  */
@@ -22,9 +22,7 @@ const CALC_KEYS = [
 export default function SafeModeCalculator({ onUnlock }: { onUnlock: () => void }) {
   const [display, setDisplay] = useState('0')
   const [unlocked, setUnlocked] = useState(false)
-  const tapCount = useRef(0)
-  const lastTap = useRef(0)
-  const [shakeArmed, setShakeArmed] = useState(false)
+  const entry = useRef('') // digits typed since the last operator or clear
 
   // Calculator logic (simplified but functional)
   const [pending, setPending] = useState<{ op: string; val: number } | null>(null)
@@ -32,7 +30,6 @@ export default function SafeModeCalculator({ onUnlock }: { onUnlock: () => void 
 
   useEffect(() => {
     initSafeMode()
-    setShakeArmed(isSafeModeEnabled())
   }, [])
 
   function inputDigit(d: string) {
@@ -43,11 +40,20 @@ export default function SafeModeCalculator({ onUnlock }: { onUnlock: () => void 
       if (d === '.' && cur.includes('.')) return cur
       return cur + d
     })
-    checkUnlockTap()
+    entry.current = (entry.current + d).slice(-8)
   }
 
   function inputOp(op: string) {
     if (unlocked) return
+    if (op === '=' && entry.current === getSafeCode()) {
+      entry.current = ''
+      setDisplay('0')
+      setPending(null)
+      setUnlocked(true)
+      onUnlock()
+      return
+    }
+    entry.current = ''
     const val = Number(display)
     if (pending) {
       const res = compute(pending.val, val, pending.op)
@@ -57,7 +63,20 @@ export default function SafeModeCalculator({ onUnlock }: { onUnlock: () => void 
       setPending({ op, val })
     }
     waitingForOperand.current = true
-    checkUnlockTap()
+  }
+
+  // ± and % act on the display; memory keys keep one stored value, like a real calculator.
+  const memory = useRef(0)
+  function special(key: string) {
+    if (unlocked) return
+    entry.current = ''
+    const v = Number(display)
+    if (key === '±') setDisplay(String(-v))
+    else if (key === '%') setDisplay(String(v / 100))
+    else if (key === 'MC') memory.current = 0
+    else if (key === 'M+') memory.current += v
+    else if (key === 'M-') memory.current -= v
+    else if (key === 'MR') { setDisplay(String(memory.current)); waitingForOperand.current = true }
   }
 
   function compute(a: number, b: number, op: string): number {
@@ -75,22 +94,7 @@ export default function SafeModeCalculator({ onUnlock }: { onUnlock: () => void 
     setDisplay('0')
     setPending(null)
     waitingForOperand.current = false
-    checkUnlockTap()
-  }
-
-  function checkUnlockTap() {
-    const now = Date.now()
-    if (now - lastTap.current < 600) {
-      tapCount.current += 1
-      if (tapCount.current >= 5) {
-        setUnlocked(true)
-        stopShakeWipe()
-        onUnlock()
-      }
-    } else {
-      tapCount.current = 1
-    }
-    lastTap.current = now
+    entry.current = ''
   }
 
   // Keyboard support
@@ -113,19 +117,12 @@ export default function SafeModeCalculator({ onUnlock }: { onUnlock: () => void 
   if (unlocked) return null // parent swaps to the real app
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--color-background)]" role="application" aria-label="Calculator">
+    <div className="fixed inset-0 z-[150] overflow-auto flex flex-col bg-[var(--color-background)]" style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }} role="application" aria-label="Calculator">
       <header className="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border)] bg-[var(--color-surface)] sticky top-0 z-10">
         <div className="flex items-center gap-2">
           <Calculator size={20} className="text-[var(--color-primary)]" aria-hidden="true" />
           <span className="font-medium text-[var(--color-on-surface)]">Calculator</span>
         </div>
-        <span className="text-xs text-[var(--color-on-surface-muted)]" aria-live="polite">
-          {shakeArmed ? (
-            <> <Vibrate size={12} className="inline" aria-hidden="true" /> Shake-to-wipe armed </>
-          ) : (
-            <> <Lock size={12} className="inline" aria-hidden="true" /> Safe mode off </>
-          )}
-        </span>
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 pb-8">
@@ -142,7 +139,7 @@ export default function SafeModeCalculator({ onUnlock }: { onUnlock: () => void 
                   return (
                     <button
                       key={ci}
-                      onClick={() => key === 'C' ? clearAll() : key === '=' || key === '+' || key === '−' || key === '×' || key === '÷' ? inputOp(key) : inputDigit(key)}
+                      onClick={() => key === 'C' ? clearAll() : key === '=' || key === '+' || key === '−' || key === '×' || key === '÷' ? inputOp(key) : /^[0-9.]$/.test(key) ? inputDigit(key) : special(key)}
                       className={`press min-h-[44px] rounded-xl text-lg font-medium transition-colors ${wide ? 'col-span-2' : ''} ${
                         ['C', '±', '%', '÷'].includes(key)
                           ? 'bg-[var(--color-surface)] text-[var(--color-on-surface)] border border-[var(--color-border)]'
@@ -163,9 +160,7 @@ export default function SafeModeCalculator({ onUnlock }: { onUnlock: () => void 
             )}
           </div>
 
-          <p className="text-center text-xs text-[var(--color-on-surface-muted)] mt-4 max-w-sm">
-            Tap <kbd className="px-1.5 py-0.5 bg-[var(--color-background)] border border-[var(--color-border)] rounded">MC</kbd> five times quickly to unlock Mindspace.
-          </p>
+
         </div>
       </main>
     </div>

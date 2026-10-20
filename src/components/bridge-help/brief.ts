@@ -76,7 +76,7 @@ export async function buildFourteenDayBrief(): Promise<FourteenDayBrief> {
 
 export function formatBriefForClinician(b: FourteenDayBrief): string {
   const lines = [
-    'MINDSpace — 14-Day Summary for Clinician',
+    'Mindspace — 14-Day Summary for Clinician',
     `Generated: ${new Date(b.generatedAt).toLocaleString()}`,
     '',
     `Period: ${b.days} days`,
@@ -99,5 +99,5 @@ export function formatBriefForClinician(b: FourteenDayBrief): string {
 }
 
 export function formatBriefForShare(b: FourteenDayBrief): string {
-  return `My MINDSpace 14-day summary:\nMood check-ins: ${b.moodCount}\nJournal entries: ${b.journalCount}\nPositive days: ${b.positiveDays} / Struggling: ${b.strugglingDays}\nBreathing sessions: ${b.breathingSessions}\nHeart checks: ${b.heartChecks}${b.avgBpm !== null ? ` (avg ${b.avgBpm} bpm)` : ''}\nGenerated ${new Date(b.generatedAt).toLocaleDateString()}`
+  return `My Mindspace 14-day summary:\nMood check-ins: ${b.moodCount}\nJournal entries: ${b.journalCount}\nPositive days: ${b.positiveDays} / Struggling: ${b.strugglingDays}\nBreathing sessions: ${b.breathingSessions}\nHeart checks: ${b.heartChecks}${b.avgBpm !== null ? ` (avg ${b.avgBpm} bpm)` : ''}\nGenerated ${new Date(b.generatedAt).toLocaleDateString()}`
 }

@@ -27,7 +27,7 @@ export default function BridgeHelp() {
   const shareNative = async () => {
     if (!brief) return
     if (navigator.share) {
-      try { await navigator.share({ title: 'My MINDSpace 14-Day Summary', text: formatBriefForShare(brief) }) } catch {}
+      try { await navigator.share({ title: 'My Mindspace 14-Day Summary', text: formatBriefForShare(brief) }) } catch {}
     } else {
       await copyShare()
     }
@@ -124,7 +124,7 @@ export default function BridgeHelp() {
 
           <div className="card p-5 space-y-4">
             <p className="text-sm text-[var(--color-on-surface-muted)]">
-              Offline-first guide with free helplines, low-cost clinics, your rights, and what to say at your first visit.
+              Where to find care in Nigeria, what to say at your first visit, and how family can help.
             </p>
 
             <div className="flex flex-wrap gap-2">
