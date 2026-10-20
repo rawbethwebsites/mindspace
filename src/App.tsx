@@ -1,4 +1,5 @@
-import { Outlet, NavLink, Link, useLocation } from 'react-router-dom'
+import { Outlet, NavLink, Link, useLocation, Navigate } from 'react-router-dom'
+import { Capacitor } from '@capacitor/core'
 import { Home, MessageCircle, BookOpen, Heart, Phone, AlertTriangle, LayoutGrid } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import Disclaimer from './components/Disclaimer'
@@ -105,6 +106,11 @@ export default function App() {
     window.addEventListener('show-crisis', handler)
     return () => window.removeEventListener('show-crisis', handler)
   }, [])
+
+  // On the website, a first-time visitor starts in the 3D world; the phone app opens straight into the app.
+  let entered = true
+  try { entered = !!localStorage.getItem('mindspace-entered') || !!localStorage.getItem('mindspace-ack') } catch { /* private mode */ }
+  if (!Capacitor.isNativePlatform() && !entered && location.pathname === '/') return <Navigate to="/world" replace />
 
   if (!acknowledged) {
     return <><LaunchVeil /><div className="page-enter"><Disclaimer onAck={handleAck} /></div></>
