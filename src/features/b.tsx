@@ -1,11 +1,13 @@
 import type { FeatureBundle } from './types'
 import { languageAddon } from './b-prefs'
+import { faithAddon } from './b-faith'
 import LanguageSettings from '../components/b/LanguageSettings'
 import Patterns from '../components/b/Patterns'
 import NightMode from '../components/b/NightMode'
 import NightSettings from '../components/b/NightSettings'
 import TonightStory from '../components/b/TonightStory'
 import WeekMusic from '../components/b/WeekMusic'
+import FaithSettings from '../components/b/FaithSettings'
 import { Activity, MoonStar, Music4 } from 'lucide-react'
 
 // Batch B registers its features here (and only here) for the Tools page, Settings and app-wide helpers.
@@ -39,7 +41,8 @@ export const bundleB: FeatureBundle = {
   settings: [
     { id: 'b-language', title: 'Language', element: <LanguageSettings /> },
     { id: 'b-night', title: 'Late nights', element: <NightSettings /> },
+    { id: 'b-faith', title: 'Faith', element: <FaithSettings /> },
   ],
   globals: [NightMode],
-  systemAddons: [languageAddon],
+  systemAddons: [languageAddon, faithAddon],
 }
