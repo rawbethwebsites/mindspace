@@ -2,7 +2,10 @@ import type { FeatureBundle } from './types'
 import { languageAddon } from './b-prefs'
 import LanguageSettings from '../components/b/LanguageSettings'
 import Patterns from '../components/b/Patterns'
-import { Activity } from 'lucide-react'
+import NightMode from '../components/b/NightMode'
+import NightSettings from '../components/b/NightSettings'
+import TonightStory from '../components/b/TonightStory'
+import { Activity, MoonStar } from 'lucide-react'
 
 // Batch B registers its features here (and only here) for the Tools page, Settings and app-wide helpers.
 export const bundleB: FeatureBundle = {
@@ -15,8 +18,19 @@ export const bundleB: FeatureBundle = {
       icon: Activity,
       element: <Patterns />,
     },
+    {
+      id: 'b-tonight-story',
+      route: '/tonight-story',
+      title: "Tonight's story",
+      blurb: 'A tiny sleep story made from your own day. Nothing kept.',
+      icon: MoonStar,
+      element: <TonightStory />,
+    },
   ],
-  settings: [{ id: 'b-language', title: 'Language', element: <LanguageSettings /> }],
-  globals: [],
+  settings: [
+    { id: 'b-language', title: 'Language', element: <LanguageSettings /> },
+    { id: 'b-night', title: 'Late nights', element: <NightSettings /> },
+  ],
+  globals: [NightMode],
   systemAddons: [languageAddon],
 }
