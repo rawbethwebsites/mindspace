@@ -5,6 +5,7 @@ import QuietSignalBanner from '../components/quiet-signal/QuietSignalBanner'
 import HeartCheck from '../components/heart-rate/HeartCheck'
 import SafeModeGuard from '../components/safe-mode/SafeModeGuard'
 import SafeModeSettings from '../components/safe-mode/SafeModeSettings'
+import BridgeHelp from '../components/bridge-help/BridgeHelp'
 
 // Batch C registers its features here (and only here) for the Tools page, Settings and app-wide helpers.
 export const bundleC: FeatureBundle = {
@@ -42,9 +43,7 @@ export const bundleC: FeatureBundle = {
       title: 'Bridge to real help',
       blurb: '14-day summary + Nigeria guide you can hand to a clinician.',
       icon: LifeBuoy,
-      element: <div className="p-6 text-center text-[var(--color-on-surface-muted)]">
-        Building the 14-day summary and Nigeria clinician guide…
-      </div>,
+      element: <BridgeHelp />,
     },
   ],
   settings: [
