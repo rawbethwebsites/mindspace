@@ -20,14 +20,13 @@ export default function LetterMoment() {
       const last3 = moods.slice(-3).map((m) => m.mood)
       if (!last3.every((m) => m <= 1)) return
 
-      for (const l of letters) {
-        const seen = await getLetterSeenAt(l.id)
-        if (cancelled) return
-        if (seen === null || Date.now() - seen >= SEVEN_DAYS_MS) {
-          setLetter(l)
-          return
-        }
-      }
+      // At most one letter every 7 days overall; show the oldest unseen first, then the least recently seen.
+      const seenAt = await Promise.all(letters.map((l) => getLetterSeenAt(l.id)))
+      if (cancelled) return
+      const lastShown = Math.max(0, ...seenAt.map((t) => t ?? 0))
+      if (Date.now() - lastShown < SEVEN_DAYS_MS) return
+      const order = letters.map((l, i) => ({ l, t: seenAt[i] ?? -1 })).sort((a, b) => a.t - b.t || a.l.createdAt - b.l.createdAt)
+      if (order.length) setLetter(order[0].l)
     }
     check()
     return () => {

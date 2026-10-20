@@ -23,6 +23,10 @@ function refreshMemories() {
       .finally(() => { memoryPull = null })
   }
 }
+// Prime at startup so the first message of a session already knows the facts.
+refreshMemories()
+window.addEventListener('memories-changed', refreshMemories)
+
 function CompanionMemoryAddon(): string {
   refreshMemories()
   if (memoryCache.length === 0) return ''

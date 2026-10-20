@@ -227,6 +227,7 @@ export async function saveMemory(fact: string) {
   const id = `memory-${Date.now()}`
   await db.put('memories', { id, fact, createdAt: Date.now(), enabled: true })
   return id
+  window.dispatchEvent(new CustomEvent('memories-changed'))
 }
 
 export async function getMemories(): Promise<StoredMemory[]> {
@@ -241,16 +242,19 @@ export async function updateMemory(id: string, fact: string, enabled: boolean) {
   if (existing) {
     await db.put('memories', { ...existing, fact, enabled })
   }
+  window.dispatchEvent(new CustomEvent('memories-changed'))
 }
 
 export async function deleteMemory(id: string) {
   const db = await getDB()
   await db.delete('memories', id)
+  window.dispatchEvent(new CustomEvent('memories-changed'))
 }
 
 export async function clearMemories() {
   const db = await getDB()
   await db.clear('memories')
+  window.dispatchEvent(new CustomEvent('memories-changed'))
 }
 
 // Export all data
