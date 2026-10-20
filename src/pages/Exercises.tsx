@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Wind, Brain, Eye, Hand, Ear, Coffee, Check, X } from 'lucide-react'
+import HeartCheck from '../components/heart-rate/HeartCheck'
+import { logActivity } from '../lib/db'
 
 const bodyScanSteps = [
   'Find a comfortable position. Close your eyes if you like.',
@@ -81,6 +83,7 @@ function BreathingExercise({ onBack }: { onBack: () => void }) {
   const [count, setCount] = useState(4)
   const [cycles, setCycles] = useState(0)
   const [running, setRunning] = useState(false)
+  const [showHeartCheck, setShowHeartCheck] = useState(false)
 
   useEffect(() => {
     if (!running) return
@@ -101,8 +104,22 @@ function BreathingExercise({ onBack }: { onBack: () => void }) {
     return () => clearInterval(timer)
   }, [running])
 
+  const handleHeartCheckDone = (bpm: number | null) => {
+    void logActivity('breathing-complete', bpm !== null ? { cycles, bpm } : { cycles })
+    onBack()
+  }
+
   const phaseText = { inhale: 'Breathe in', hold1: 'Hold', exhale: 'Breathe out', hold2: 'Hold' }
   const scale = phase === 'inhale' ? 1.4 : phase === 'exhale' ? 0.8 : phase === 'hold1' ? 1.4 : 0.8
+
+  if (showHeartCheck) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center pb-12 px-6">
+        <BackButton onBack={onBack} />
+        <HeartCheck onDone={handleHeartCheckDone} />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center pb-12 px-6">
@@ -135,7 +152,13 @@ function BreathingExercise({ onBack }: { onBack: () => void }) {
         <div className="flex flex-col items-center gap-4">
           <p className="text-sm text-[var(--color-on-surface-muted)]" role="status">{cycles} cycles completed</p>
           <button
-            onClick={() => { setRunning(false); setPhase('inhale'); setCount(4); setCycles(0) }}
+            onClick={() => {
+              setRunning(false)
+              setPhase('inhale')
+              setCount(4)
+              setCycles(0)
+              setShowHeartCheck(true)
+            }}
             aria-label="Stop breathing exercise"
             className="btn-ghost px-6 py-2 text-sm min-h-[44px]"
           >
