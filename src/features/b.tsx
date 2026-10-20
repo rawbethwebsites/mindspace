@@ -5,7 +5,8 @@ import Patterns from '../components/b/Patterns'
 import NightMode from '../components/b/NightMode'
 import NightSettings from '../components/b/NightSettings'
 import TonightStory from '../components/b/TonightStory'
-import { Activity, MoonStar } from 'lucide-react'
+import WeekMusic from '../components/b/WeekMusic'
+import { Activity, MoonStar, Music4 } from 'lucide-react'
 
 // Batch B registers its features here (and only here) for the Tools page, Settings and app-wide helpers.
 export const bundleB: FeatureBundle = {
@@ -25,6 +26,14 @@ export const bundleB: FeatureBundle = {
       blurb: 'A tiny sleep story made from your own day. Nothing kept.',
       icon: MoonStar,
       element: <TonightStory />,
+    },
+    {
+      id: 'b-week-music',
+      route: '/week-music',
+      title: 'Your week as music',
+      blurb: 'Your last 7 check-ins become a small ambient piece.',
+      icon: Music4,
+      element: <WeekMusic />,
     },
   ],
   settings: [
