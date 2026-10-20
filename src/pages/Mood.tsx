@@ -117,7 +117,7 @@ export default function Mood() {
                   type="button"
                   onClick={() => toggleTag(t.id)}
                   aria-pressed={tags.includes(t.id)}
-                  className={`press min-h-[36px] px-3 rounded-full border text-[13px] transition-colors ${
+                  className={`press min-h-[44px] px-3.5 rounded-full border text-[13px] transition-colors ${
                     tags.includes(t.id)
                       ? 'bg-[var(--color-primary)]/15 border-[var(--color-primary)]/50 text-[var(--color-on-surface)] font-medium'
                       : 'border-[var(--color-border)] text-[var(--color-on-surface-muted)]'
