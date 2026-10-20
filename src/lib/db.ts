@@ -7,7 +7,9 @@ interface MindspaceDB extends DBSchema {
   }
   moods: {
     key: string
-    value: { id: string; date: string; mood: number; note?: string; createdAt: number }
+    // tags: Batch B "Nigeria-aware patterns" — optional context tags. Older
+    // entries simply have no tags; every reader must handle that (b?.tags ?? []).
+    value: { id: string; date: string; mood: number; note?: string; tags?: string[]; createdAt: number }
   }
   journal: {
     key: string
@@ -87,11 +89,14 @@ export async function deleteConversation(id: string) {
 }
 
 // Mood functions
-export async function saveMood(mood: number, note?: string) {
+export async function saveMood(mood: number, note?: string, tags?: string[]) {
   const db = await getDB()
   const date = localDay()
   const id = `mood-${date}`
-  await db.put('moods', { id, date, mood, note, createdAt: Date.now() })
+  // A re-save keeps its tags unless new tags are given (tags may be cleared by passing []).
+  const existing = await db.get('moods', id)
+  const savedTags = tags ?? existing?.tags
+  await db.put('moods', { id, date, mood, note, tags: savedTags, createdAt: Date.now() })
 }
 
 export async function getMoods() {

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { TrendingUp, Frown, Meh, Smile, Laugh, Loader2, Check, Sparkles } from 'lucide-react'
 import { getMoods, saveMood, getTodayMood, localDay, getWins } from '../lib/db'
+import { MOOD_TAGS } from '../features/b-tags'
 
 const moodIcons = [Frown, Frown, Meh, Smile, Laugh]
 const moodLabels = ['Struggling', 'Low', 'Okay', 'Good', 'Great']
@@ -18,6 +19,7 @@ export default function Mood() {
   const [moods, setMoods] = useState<{ date: string; mood: number; note?: string }[]>([])
   const [todaySet, setTodaySet] = useState(false)
   const [hasWins, setHasWins] = useState(false)
+  const [tags, setTags] = useState<string[]>([])
 
   useEffect(() => {
     loadData()
@@ -29,17 +31,22 @@ export default function Mood() {
     if (today) {
       setSelected(today.mood)
       setNote(today.note || '')
+      setTags(today.tags ?? [])
       setTodaySet(true)
     }
     const all = await getMoods()
     setMoods(all)
   }
 
+  const toggleTag = (id: string) => {
+    setTags((t) => (t.includes(id) ? t.filter((x) => x !== id) : [...t, id]))
+  }
+
   const handleSave = async () => {
     if (selected === null) return
     // One shape, three states (after "Shape morphing through UI states"): button -> loader -> check -> button
     setSaveState('saving')
-    await Promise.all([saveMood(selected, note.trim() || undefined), new Promise((r) => setTimeout(r, 420))])
+    await Promise.all([saveMood(selected, note.trim() || undefined, tags), new Promise((r) => setTimeout(r, 420))])
     setSaveState('done')
     setTodaySet(true)
     setTimeout(() => setSaveState('idle'), 1300)
@@ -102,6 +109,28 @@ export default function Mood() {
             rows={3}
             className="w-full px-4 py-3 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-sm text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-subtle)] focus:outline-none focus:border-[var(--color-primary)] transition-colors resize-none mb-4"
           />
+
+          {/* Day tags (Batch B "Your patterns") — optional context for the day */}
+          <div className="mb-4">
+            <p className="text-sm font-medium text-[var(--color-on-surface-muted)] mb-2">What was today like? (optional)</p>
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Day tags">
+              {MOOD_TAGS.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => toggleTag(t.id)}
+                  aria-pressed={tags.includes(t.id)}
+                  className={`press min-h-[44px] px-3.5 rounded-full border text-[13px] transition-colors ${
+                    tags.includes(t.id)
+                      ? 'bg-[var(--color-primary)]/15 border-[var(--color-primary)]/50 text-[var(--color-on-surface)] font-medium'
+                      : 'border-[var(--color-border)] text-[var(--color-on-surface-muted)]'
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <button
             onClick={handleSave}
