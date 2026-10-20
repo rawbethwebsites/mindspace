@@ -5,7 +5,7 @@
    ═════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  --font-body: 'Inter Variable', 'Inter', -apple-system, sans-serif;
+  --font-body: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', -apple-system, sans-serif;
   --font-display: var(--font-body);
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --display-weight: 780;
@@ -23,7 +23,9 @@
 }
 
 body { font-family: var(--font-body); }
-h1, h2, h3, .page-title { font-family: var(--font-display); }
+h1, h2, h3, .page-title { font-family: var(--font-display); font-stretch: var(--display-stretch, 100%); }
+[data-theme='living'], [data-theme='signal'] { --display-stretch: 86%; }
+[data-theme='paper'] { --display-stretch: 100%; }
 .page-title { font-weight: var(--display-weight); }
 .card { border-radius: var(--radius-card); }
 .btn-sunset { background: var(--btn-bg); color: var(--btn-fg); border-radius: var(--radius-btn); }
@@ -40,8 +42,8 @@ input, textarea { color: var(--color-on-surface); }
 /* ─── A · Living Light ─── near-black, one breathing light ─── */
 [data-theme='living'] {
   color-scheme: dark;
-  --font-display: 'Space Grotesk', var(--font-body);
-  --display-weight: 400;
+  --font-display: var(--font-body);
+  --display-weight: 340;
   --bg: #07090c; --bg-deep: #f4efe8;
   --surface: #10141a; --surface-2: #151a21; --surface-3: #1c222a;
   --surface-glass: rgba(16, 20, 26, 0.82); --surface-glass-2: rgba(21, 26, 33, 0.82);
@@ -93,7 +95,7 @@ input, textarea { color: var(--color-on-surface); }
 /* ─── C · Glass Depth ─── frosted glass over a living sunrise ─── */
 [data-theme='glass'] {
   color-scheme: dark;
-  --font-display: 'Inter Variable', var(--font-body);
+  --font-display: var(--font-body);
   --display-weight: 600;
   --bg: #6b4a3f; --bg-deep: #ffffff;
   --surface: rgba(255, 255, 255, 0.16); --surface-2: rgba(255, 255, 255, 0.12); --surface-3: rgba(255, 255, 255, 0.2);
@@ -125,8 +127,8 @@ input, textarea { color: var(--color-on-surface); }
 /* ─── D · Signal ─── graphite, hairlines, mono ─── */
 [data-theme='signal'] {
   color-scheme: dark;
-  --font-display: 'Space Grotesk', var(--font-body);
-  --display-weight: 400;
+  --font-display: var(--font-body);
+  --display-weight: 340;
   --bg: #0d0f12; --bg-deep: #ece7df;
   --surface: #111418; --surface-2: #15191e; --surface-3: #1b2026;
   --surface-glass: #111418; --surface-glass-2: #15191e;

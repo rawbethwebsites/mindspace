@@ -55,7 +55,7 @@
 }
 
 body {
-  font-family: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', -apple-system, sans-serif;
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
