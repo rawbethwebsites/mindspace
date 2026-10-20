@@ -23,4 +23,7 @@ export interface FeatureBundle {
   features: Feature[]
   settings: SettingsSection[]
   globals: ComponentType[] // always-mounted helpers (e.g. night mode, shake-to-wipe)
+  // Extra lines added to every companion chat's instructions (e.g. language, faith, remembered facts).
+  // Return '' when the user has it switched off.
+  systemAddons: (() => string)[]
 }
