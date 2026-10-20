@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { TrendingUp, Frown, Meh, Smile, Laugh, Loader2, Check } from 'lucide-react'
-import { getMoods, saveMood, getTodayMood, localDay } from '../lib/db'
+import { Link } from 'react-router-dom'
+import { TrendingUp, Frown, Meh, Smile, Laugh, Loader2, Check, Sparkles } from 'lucide-react'
+import { getMoods, saveMood, getTodayMood, localDay, getWins } from '../lib/db'
 
 const moodIcons = [Frown, Frown, Meh, Smile, Laugh]
 const moodLabels = ['Struggling', 'Low', 'Okay', 'Good', 'Great']
@@ -16,9 +17,11 @@ export default function Mood() {
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'done'>('idle')
   const [moods, setMoods] = useState<{ date: string; mood: number; note?: string }[]>([])
   const [todaySet, setTodaySet] = useState(false)
+  const [hasWins, setHasWins] = useState(false)
 
   useEffect(() => {
     loadData()
+    getWins().then((w) => setHasWins(w.length > 0))
   }, [])
 
   const loadData = async () => {
@@ -123,6 +126,21 @@ export default function Mood() {
             {streak > 0 ? `${streak}-day streak — keep it up` : 'Check in daily to build your streak'}
           </span>
         </div>
+
+        {todaySet && selected !== null && selected <= 1 && hasWins && (
+          <Link
+            to="/wins-jar"
+            className="press flex items-center gap-3 mb-6 p-4 card text-left"
+          >
+            <div className="icon-tile w-10 h-10">
+              <Sparkles size={18} className="text-[var(--color-primary)]" aria-hidden="true" />
+            </div>
+            <span className="flex-1">
+              <span className="block text-sm font-semibold text-[var(--color-on-surface)]">Open your wins jar</span>
+              <span className="block text-xs text-[var(--color-on-surface-muted)] mt-0.5">A few small things you've already done, poured out for you.</span>
+            </span>
+          </Link>
+        )}
 
         {/* History */}
         {moods.length > 0 && (

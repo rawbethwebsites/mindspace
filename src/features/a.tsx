@@ -1,7 +1,9 @@
 import type { FeatureBundle } from './types'
-import { Mail, Flame } from 'lucide-react'
+import { Mail, Flame, MessagesSquare, Sparkles } from 'lucide-react'
 import LetterToFuture from '../pages/LetterToFuture'
 import BurnIt from '../pages/BurnIt'
+import RehearsalRoom from '../pages/RehearsalRoom'
+import WinsJar from '../pages/WinsJar'
 import LetterMoment from '../components/LetterMoment'
 
 // Batch A registers its features here (and only here) for the Tools page, Settings and app-wide helpers.
@@ -22,6 +24,22 @@ export const bundleA: FeatureBundle = {
       blurb: 'Say it. Watch it go. Nothing is saved.',
       icon: Flame,
       element: <BurnIt />,
+    },
+    {
+      id: 'rehearsal-room',
+      route: '/rehearsal-room',
+      title: 'Rehearsal room',
+      blurb: 'Practice the hard conversation, safely.',
+      icon: MessagesSquare,
+      element: <RehearsalRoom />,
+    },
+    {
+      id: 'wins-jar',
+      route: '/wins-jar',
+      title: 'Wins jar',
+      blurb: 'Small wins. Poured out when you need them.',
+      icon: Sparkles,
+      element: <WinsJar />,
     },
   ],
   settings: [],
